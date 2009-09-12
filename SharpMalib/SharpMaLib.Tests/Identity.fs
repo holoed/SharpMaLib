@@ -25,13 +25,13 @@ type IdentityTests =
     member x.MonadLaws() =
         // Left unit  
         quickCheck (fun m f a -> ((unit a) >>= f) = f a) 
-        // Left unit
+        // Right unit
         quickCheck (fun m  -> (m >>= unit) = m)
         // Associative
         quickCheck (fun m f g-> ((m >>= f) >>= g) = (m >>= (fun x -> f x >>= g)))
 
     [<Test>]
-    member x.MonadLawsUsingSugarSyntax() =
+    member x.IdentityDoesntPerformAnyExtraComputation() =
         quickCheck (fun x y -> identity  { let! x' = x
                                            let! y' = y
                                            return x' + y' } = x + y)
