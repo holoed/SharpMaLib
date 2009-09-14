@@ -20,12 +20,24 @@ type StateTests =
     new() = {}
     
     [<Test>]
-    member x.NoStateChange() =
+    member o.NoState() =
         let f x = state { return x }
-        quickCheck (Execute (f x) () = x)
-        
-//    [<Test>]
-//    member x.StateInc() =
-//        let f x = state { return x }
-//        quickCheck (Execute (f x) () = x)
+        quickCheck (fun x -> Execute (f x) () = x)
+             
+    [<Test>]
+    member o.getState() =        
+        let f x = state { let! s = getState 
+                          return x + s }
+        quickCheck (fun x -> Execute (f x) 42 = x + 42) 
+
+    [<Test>]
+    member o.setState() =   
+        let count = List.fold (fun x _ -> x + 1) 0     
+        let rec mcount xs = state { let! s = getState
+                                    match xs with
+                                    | [] -> return s
+                                    | x::xs' -> do! setState (s + 1)
+                                                return! mcount xs' }
+        quickCheck (fun x -> Execute (mcount [1..x]) 0 = count [1..x]) 
+
         

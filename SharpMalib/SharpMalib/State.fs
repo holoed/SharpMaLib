@@ -15,14 +15,15 @@ module StateMonad
 
 // State Monad
 
-type State<'state,'a> = State of ('state -> 'a * 'state)
+type State<'a, 'state> = State of ('state -> 'a * 'state)
 
 type StateBuilder() =
     member this.Return a = State(fun s -> a, s)
-    member this.Bind (State x, f) = State(fun s -> let (y, s') = x s in (f y) s') 
-
-let get = State(fun s -> (s,s))
-let put s = State(fun _ -> ((), s))
+    member this.Bind (m, f) =  State (fun s -> let (v, s') = let (State f) = m in f s
+                                               let (State f') = f v in f' s')  
+   
+let getState = State (fun s -> s, s)
+let setState s = State (fun _ -> (), s)  
 
 let Execute m s = let (State f) = m in
                   let (x,_) = f s in x
