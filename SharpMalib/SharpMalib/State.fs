@@ -29,3 +29,13 @@ let Execute m s = let (State f) = m in
                   let (x,_) = f s in x
     
 let state = StateBuilder() 
+
+let map f xs = 
+            let rec Loop xs' cont = 
+                state {
+                        match xs' with
+                        | h :: t -> let! h' = f(h)
+                                    return! Loop t (fun tAcc -> cont(h'::tAcc))
+                        | [] -> return cont([])
+                      }
+            Loop  xs (fun x -> x)
