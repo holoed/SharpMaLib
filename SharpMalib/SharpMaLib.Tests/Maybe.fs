@@ -20,7 +20,7 @@ let unit = maybe.Return
 let f x = if x > 0 then Just x else Nothing 
 
 [<TestFixture>]
-type IdentityTests =
+type MaybeTests =
     new() = {}
     
     [<Test>]

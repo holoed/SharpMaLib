@@ -10,21 +10,22 @@
 // * You must not remove this notice, or any other, from this software.
 // * **********************************************************************************************
 
-namespace SharpMalib
-module StateMonad
-
-// State Monad
-
-type State<'state,'a> = State of ('state -> 'a * 'state)
-
-type StateBuilder() =
-    member this.Return a = State(fun s -> a, s)
-    member this.Bind (State x, f) = State(fun s -> let (y, s') = x s in (f y) s') 
-
-let get = State(fun s -> (s,s))
-let put s = State(fun _ -> ((), s))
-
-let Execute m s = let (State f) = m in
-                  let (x,_) = f s in x
+open NUnit.Framework
+open FsCheck
+open NUnitFsCheck
+open SharpMalib.StateMonad
+                               
+[<TestFixture>]
+type StateTests =
+    new() = {}
     
-let state = StateBuilder() 
+    [<Test>]
+    member x.NoStateChange() =
+        let f x = state { return x }
+        quickCheck (Execute (f x) () = x)
+        
+//    [<Test>]
+//    member x.StateInc() =
+//        let f x = state { return x }
+//        quickCheck (Execute (f x) () = x)
+        
