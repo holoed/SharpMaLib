@@ -40,4 +40,11 @@ type StateTests =
                                                 return! mcount xs' }
         quickCheck (fun x -> Execute (mcount [1..x]) 0 = count [1..x]) 
 
+    [<Test>]
+    member o.map() =        
+        let f x = state { let! s = getState
+                          return x + s }     
+        let gm xs = Execute (map f xs) 42
+        let g xs = List.map (fun x -> x + 42) xs
+        quickCheck (fun x -> g [0..x] = gm [0..x])
         
