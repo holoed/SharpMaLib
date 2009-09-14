@@ -66,6 +66,7 @@
     <Compile Include="NUnitFsCheck.fs" />
     <Compile Include="Identity.fs" />
     <Compile Include="Maybe.fs" />
+    <Compile Include="State.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SharpMalib\SharpMalib.fsproj">
