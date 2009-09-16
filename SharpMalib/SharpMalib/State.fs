@@ -30,12 +30,14 @@ let Execute m s = let (State f) = m in
     
 let state = StateBuilder() 
 
-let map f xs = 
-            let rec Loop xs' cont = 
-                state {
-                        match xs' with
-                        | h :: t -> let! h' = f(h)
-                                    return! Loop t (fun tAcc -> cont(h'::tAcc))
-                        | [] -> return cont([])
-                      }
-            Loop  xs (fun x -> x)
+
+let rec foldr f v xs =
+    state { match xs with
+            | [] -> return v
+            | h::t -> let! v'= (f v h)
+                      return! foldr f v' t }
+                      
+let foldl f xs v = foldr (fun x y -> f y x) v (List.rev xs)
+
+let map f xs = foldl (fun x y -> state { let! x' = f x
+                                         return x' :: y }) xs []
