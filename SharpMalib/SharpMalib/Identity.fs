@@ -10,7 +10,11 @@
 // * **********************************************************************************************
 
 namespace SharpMalib
+[<System.Runtime.CompilerServices.Extension>]
 module IdentityMonad
+
+open System
+open System.Runtime.CompilerServices
 
 // Identity Monad
 // The Identity monad is a monad that does not embody any computational strategy. 
@@ -26,4 +30,15 @@ let identity = IdentityBuilder()
 
 let map f m = identity.Bind(m, fun x -> identity.Return (f x))      
 
-let join z = identity.Bind(z, fun m -> m)                      
+let join z = identity.Bind(z, fun m -> m)    
+
+// C# Support
+
+[<Extension>]
+let Select(m, f : Func<'a,'b>) = map f.Invoke m
+    
+[<Extension>]
+let SelectMany(m, f : Func<'a, 'b>, projection : Func<'a, 'b, 'c>) = 
+   identity.Bind (m, (fun x -> let x' = f.Invoke(x)
+                               projection.Invoke(x, x')))
+                  
