@@ -37,6 +37,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{D3CE2465-49A0-4003-A3DD-89E6447B27B4}"
 	ProjectSection(SolutionItems) = preProject
 		License.htm = License.htm
+		SharpMaLib.nunit = SharpMaLib.nunit
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpMaLibCS.Tests", "SharpMaLibCS.Tests\SharpMaLibCS.Tests.csproj", "{4A312C75-AA12-4D96-B2F9-9D1764A53247}"
