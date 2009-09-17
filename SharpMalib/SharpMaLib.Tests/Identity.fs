@@ -12,7 +12,7 @@
 open NUnit.Framework
 open FsCheck
 open NUnitFsCheck
-open SharpMalib.IdentityMonad
+open SharpMalib.Identity.IdentityMonad
 
 let (>>=) m f = identity.Bind (m, f)
 let unit = identity.Return

@@ -12,7 +12,7 @@
 open NUnit.Framework
 open FsCheck
 open NUnitFsCheck
-open SharpMalib.MaybeMonad
+open SharpMalib.Maybe.MaybeMonad
 
 let (>>=) m f = maybe.Bind (m, f)
 let unit = maybe.Return

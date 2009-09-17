@@ -9,8 +9,12 @@
 // * You must not remove this notice, or any other, from this software.
 // * **********************************************************************************************
 
-namespace SharpMalib
+namespace SharpMalib.Maybe
+[<System.Runtime.CompilerServices.Extension>]
 module MaybeMonad
+
+open System
+open System.Runtime.CompilerServices
 
 // Maybe Monad
 // The Maybe monad embodies the strategy of combining a chain of computations  
@@ -18,7 +22,7 @@ module MaybeMonad
 // It is useful when a computation entails a sequence of steps that depend on one another, 
 // and in which some steps may fail to return a value.
 
-type Maybe<'a> = Nothing | Just of 'a
+type 'a Maybe = Nothing | Just of 'a
 
 type MaybeBuilder() =
     member this.Return a = Just a
@@ -26,4 +30,21 @@ type MaybeBuilder() =
                               | Just x -> f x
                               | _ -> Nothing
     
-let maybe = MaybeBuilder()                                
+let maybe = MaybeBuilder()   
+
+let map f m = maybe.Bind(m, fun x -> maybe.Return (f x))                                  
+
+// C# Support
+
+[<Extension>]
+let Select(m, f : Func<'a,'b>) = map f.Invoke m
+    
+[<Extension>]
+let SelectMany(m:'a Maybe, f : Func<'a, 'b Maybe>, projection : Func<'a, 'b, 'c>) = 
+   maybe.Bind (m, (fun x -> match f.Invoke(x) with
+                            | Just y -> Just(projection.Invoke(x, y))
+                            | Nothing -> Nothing))
+
+[<Extension>]
+let Just(x) = Just x
+
