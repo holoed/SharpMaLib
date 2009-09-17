@@ -30,7 +30,7 @@ namespace SharpMaLibCS.Tests
         [Test]
         public void Select()
         {
-            Func<int, MaybeMonad.Maybe<int>>  f = x => MaybeMonad.Maybe<int>.Just(x);
+            Func<int, MaybeMonad.Maybe<int>> f = x => x.Just();
             Spec.ForAny<int>(x => f(x) == from y in f(x)
                                           select y).QuickCheck("select"); 
         }
