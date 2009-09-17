@@ -45,6 +45,7 @@
     <Compile Include="Identity.fs" />
     <Compile Include="Maybe.fs" />
     <Compile Include="State.fs" />
+    <Compile Include="List.fs" />
   </ItemGroup>
   <Import Project="$(ProgramFiles)\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
