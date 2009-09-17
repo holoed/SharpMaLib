@@ -9,7 +9,7 @@
 // * You must not remove this notice, or any other, from this software.
 // * **********************************************************************************************
 
-namespace SharpMalib
+namespace SharpMalib.Identity
 [<System.Runtime.CompilerServices.Extension>]
 module IdentityMonad
 

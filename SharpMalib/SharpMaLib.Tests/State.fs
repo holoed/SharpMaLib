@@ -14,7 +14,7 @@ open System
 open NUnit.Framework
 open FsCheck
 open NUnitFsCheck
-open SharpMalib.StateMonad
+open SharpMalib.State.StateMonad
 
 let equals expected actual = (expected = actual) or (Double.IsNaN(expected) or Double.IsNaN(actual))
                                  

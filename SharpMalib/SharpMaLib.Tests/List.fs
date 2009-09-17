@@ -12,7 +12,7 @@
 open NUnit.Framework
 open FsCheck
 open NUnitFsCheck
-open SharpMalib.ListMonad
+open SharpMalib.List.ListMonad
 
 let (>>=) m f = list.Bind (m, f)
 let unit = list.Return

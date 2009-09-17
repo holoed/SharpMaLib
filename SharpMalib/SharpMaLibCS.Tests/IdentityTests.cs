@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using SharpMalib;
+using SharpMalib.Identity;
 using FsCheck;
 using System.Drawing;
 
@@ -31,7 +31,7 @@ namespace SharpMaLibCS.Tests
         public void Select()
         {
             Spec.ForAny<int>(x => x == from y in x 
-                                       select x).QuickCheck("select"); 
+                                       select y).QuickCheck("select"); 
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace SharpMaLibCS.Tests
         {
             Spec.ForAny<int, int>((x,y) => new Point(x, y) == from xp in x 
                                                               from yp in y 
-                                                              select new Point(x, y)).QuickCheck("selectMany");
+                                                              select new Point(xp, yp)).QuickCheck("selectMany");
         }
     }
 }
