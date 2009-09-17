@@ -1,0 +1,7 @@
+﻿<NUnitProject>
+  <Settings activeconfig="Default" />
+  <Config name="Default" binpathtype="Auto">
+    <assembly path="SharpMaLib.Tests\bin\Debug\SharpMaLib.Tests.dll" />
+    <assembly path="SharpMaLibCS.Tests\bin\Debug\SharpMaLibCS.Tests.dll" />
+  </Config>
+</NUnitProject>
