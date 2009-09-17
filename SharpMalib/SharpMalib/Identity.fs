@@ -22,4 +22,8 @@ type IdentityBuilder() =
     member this.Return a = a
     member this.Bind (m, f) = f m   
     
-let identity = IdentityBuilder()                                
+let identity = IdentityBuilder()    
+
+let map f m = identity.Bind(m, fun x -> identity.Return (f x))      
+
+let join z = identity.Bind(z, fun m -> m)                      
