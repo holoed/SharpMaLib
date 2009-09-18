@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-#region License
+﻿#region License
 
 /* ****************************************************************************
  * Copyright (c) Edmondo Pentangelo. 
@@ -16,6 +13,9 @@ using System.Linq;
 
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using SharpMalib.Maybe;
@@ -48,7 +48,7 @@ namespace SharpMaLibCS.Tests
 
             Spec.ForAny<int>(x => Expected(f, g, x) == from y in f(x)
                                                        from z in g(y)
-                                                       select new Point(y, z)).QuickCheck("select");
+                                                       select new Point(y, z)).QuickCheck("selectMany");
         }
 
         private MaybeMonad.Maybe<Point> Expected(Func<int, MaybeMonad.Maybe<int>> f, Func<int, MaybeMonad.Maybe<int>> g, int x)
