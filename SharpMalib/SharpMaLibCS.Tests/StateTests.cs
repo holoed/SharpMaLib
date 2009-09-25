@@ -20,6 +20,7 @@ using System.Text;
 using NUnit.Framework;
 using SharpMalib.State;
 using FsCheck;
+using Microsoft.FSharp.Core;
 
 namespace SharpMaLibCS.Tests
 {
@@ -29,18 +30,35 @@ namespace SharpMaLibCS.Tests
         [Test]
         public void Select()
         {
-            var getState = StateMonad.getState<int>();
+            Spec.ForAny<double>(x => x == StateMonad.Execute(from xp in GetState<double>() 
+                                                             select xp, x)).QuickCheck("select");        
+        }
 
-            Spec.ForAny<int, int>((x,y) => x == StateMonad.Execute(from xp in getState 
-                                                                   select xp, y)).QuickCheck("select");        
-        }  
+        [Test]
+        public void SelectMany()
+        {
+            Spec.ForAny<string, string>((x, y) => x + y == StateMonad.Execute(from xp in GetState<string>()
+                                                                              from _  in SetState<string>(y)
+                                                                              from yp in GetState<string>()
+                                                                              select xp + yp, x)).QuickCheck("select");    
+        }
+
+        private StateMonad.State<T,T> GetState<T>()
+        {
+            return StateMonad.getState<T>();   
+        }
+
+        private StateMonad.State<Unit, S> SetState<S>(S state)
+        {
+            return StateMonad.setState<S>(state);
+        }
     }
 
     public static class StateExtensions
     {
-        public static StateMonad.State<K, int> Select<T, K>(this StateMonad.State<T, int> m, Func<T, K> f)
+        public static StateMonad.State<K, double> Select<T, K>(this StateMonad.State<T, double> m, Func<T, K> f)
         {
-            return StateMonad.Select<T, int, K>(m, f);
+            return StateMonad.Select<T, double, K>(m, f);
         }
     }
 }
