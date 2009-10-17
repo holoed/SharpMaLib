@@ -13,6 +13,7 @@ namespace SharpMalib.Identity
 [<System.Runtime.CompilerServices.Extension>]
 module IdentityMonad
 
+open Utils
 open System
 open System.Runtime.CompilerServices
 
@@ -23,22 +24,24 @@ open System.Runtime.CompilerServices
 // simply applying functions to their arguments.
 
 type IdentityBuilder() =
+    // a -> m a
     member this.Return a = a
-    member this.Bind (m, f) = f m   
+    //  m a -> (a -> m b) -> m b
+    member this.Bind (a, f) = f a  
     
 let identity = IdentityBuilder()    
 
-let map f m = identity.Bind(m, fun x -> identity.Return (f x))      
+// (a -> b) -> m a -> m b
+let map f m = identity.Bind(m, fun x -> x |> f |> identity.Return)      
 
-let join z = identity.Bind(z, fun m -> m)    
+// m (m a) -> m a
+let join z = identity.Bind(z, id)    
 
 // C# Support
 
 [<Extension>]
-let Select(m, f : Func<'a,'b>) = map f.Invoke m
+let Select(m, f) = map (applyFunc f) m
     
 [<Extension>]
-let SelectMany(m, f : Func<'a, 'b>, projection : Func<'a, 'b, 'c>) = 
-   identity.Bind (m, (fun x -> let x' = f.Invoke(x)
-                               projection.Invoke(x, x')))
-                  
+let SelectMany(m, f, p) = 
+   identity.Bind (m, (fun x -> x |> applyFunc f |> applyFunc2 p x))
