@@ -13,6 +13,7 @@ namespace SharpMalib.Maybe
 [<System.Runtime.CompilerServices.Extension>]
 module MaybeMonad
 
+open Utils
 open System
 open System.Runtime.CompilerServices
 
@@ -25,26 +26,35 @@ open System.Runtime.CompilerServices
 type 'a Maybe = Nothing | Just of 'a
 
 type MaybeBuilder() =
+    // a -> m a
     member this.Return a = Just a
+    //  m a -> (a -> m b) -> m b
     member this.Bind (m, f) = match m with
                               | Just x -> f x
                               | _ -> Nothing
     
 let maybe = MaybeBuilder()   
 
-let map f m = maybe.Bind(m, fun x -> maybe.Return (f x))                                  
+// (a -> b) -> m a -> m b
+let map f m = maybe.Bind(m, fun x -> x |> f |> maybe.Return)  
+
+// m a -> m a -> m a
+let append x y f = maybe { let! x' = x
+                           let! y' = y
+                           return f x' y' }
+
+// m (m a) -> m a
+let join z = maybe.Bind(z, id)                                 
 
 // C# Support
 
 [<Extension>]
-let Select(m, f : Func<'a,'b>) = map f.Invoke m
+let Select(m, f) = map (applyFunc f) m
     
 [<Extension>]
-let SelectMany(m:'a Maybe, f : Func<'a, 'b Maybe>, projection : Func<'a, 'b, 'c>) = 
-   maybe.Bind (m, (fun x -> match f.Invoke(x) with
-                            | Just y -> Just(projection.Invoke(x, y))
+let SelectMany(m, f, p) = 
+   maybe.Bind (m, (fun x -> match (applyFunc f x) with
+                            | Just y -> Just(applyFunc2 p x y)
                             | Nothing -> Nothing))
-
 [<Extension>]
-let Just(x) = Just x
-
+let Just x = Just x

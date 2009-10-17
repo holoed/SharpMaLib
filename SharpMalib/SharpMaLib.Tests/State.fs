@@ -21,7 +21,7 @@ let equals expected actual = (expected = actual) or (Double.IsNaN(expected) or D
 [<TestFixture>]
 type StateTests =
     new() = {}
-    
+        
     [<Test>]
     member o.NoState() =
         let f x = state { return x }
@@ -64,6 +64,6 @@ type StateTests =
     member o.map() =        
         let f x = state { let! s = getState
                           return x + s }     
-        let gm xs = Execute (map f xs) 42
+        let gm xs = Execute (mapList f xs) 42
         let g xs = List.map (fun x -> x + 42) xs
         quickCheck (fun x -> g [0..x] = gm [0..x])
