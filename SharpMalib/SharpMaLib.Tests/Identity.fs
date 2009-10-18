@@ -16,7 +16,6 @@ open SharpMalib.Identity.IdentityMonad
 
 let (>>=) m f = identity.Bind (m, f)
 let unit = identity.Return
-let id = fun x -> x
 
 [<TestFixture>]
 type IdentityTests =

@@ -43,18 +43,25 @@ let Execute m s = let (State f) = m in
 
 let state = StateBuilder() 
 
+// (a -> b) -> m a -> m b
 let map f m = state.Bind(m, fun x -> x |> f |> state.Return) 
-    
+
+// m (m a) -> m a
+let join m = state.Bind(m, id)
+
+// (a -> b -> m a) -> a -> [b] -> m a     
 let rec foldr f v xs =
     state { match xs with
             | [] -> return v
             | h::t -> let! v'= (f v h)
                       return! foldr f v' t }
                       
+// (a -> b -> m b) -> [a] -> b -> m b
 let foldl f xs v = foldr (fun x y -> f y x) v (List.rev xs)
 
+// (a -> m b) -> [a] -> m [b]
 let mapList f xs = foldl (fun x y -> state { let! x' = f x
-                                         return x' :: y }) xs []
+                                             return x' :: y }) xs []
                                          
 // C# Support
 
