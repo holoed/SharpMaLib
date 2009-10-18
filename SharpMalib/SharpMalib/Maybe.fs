@@ -38,13 +38,8 @@ let maybe = MaybeBuilder()
 // (a -> b) -> m a -> m b
 let map f m = maybe.Bind(m, fun x -> x |> f |> maybe.Return)  
 
-// m a -> m a -> m a
-let append x y f = maybe { let! x' = x
-                           let! y' = y
-                           return f x' y' }
-
 // m (m a) -> m a
-let join z = maybe.Bind(z, id)                                 
+let join z = maybe.Bind(z, id)                                
 
 // C# Support
 
@@ -58,3 +53,9 @@ let SelectMany(m, f, p) =
                             | Nothing -> Nothing))
 [<Extension>]
 let Just x = Just x
+
+[<Extension>]
+let Join m = join m
+
+[<Extension>]
+let Map (m, f:Converter<'a,'b>) = map (FuncConvert.ToFastFunc f) m

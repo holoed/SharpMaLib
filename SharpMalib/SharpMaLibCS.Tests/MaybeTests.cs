@@ -51,6 +51,18 @@ namespace SharpMaLibCS.Tests
                                                        select new Point(y, z)).QuickCheck("selectMany");
         }
 
+        [Test]
+        public void Join()
+        {
+            Spec.ForAny<int>(x => x.Just() == x.Just().Just().Join());
+        }
+
+        [Test]
+        public void Map()
+        {
+            Spec.ForAny<int>(x => x.Just().Map(xi => xi * xi) == (x * x).Just());
+        }
+
         private MaybeMonad.Maybe<Point> Expected(Func<int, MaybeMonad.Maybe<int>> f, Func<int, MaybeMonad.Maybe<int>> g, int x)
         {
             var xp = f(x);

@@ -41,5 +41,17 @@ namespace SharpMaLibCS.Tests
                                                               from yp in y 
                                                               select new Point(xp, yp)).QuickCheck("selectMany");
         }
+
+        [Test]
+        public void Join()
+        {
+            Spec.ForAny<int>(x => x == x.Join());
+        }
+
+        [Test]
+        public void Map()
+        {
+            Spec.ForAny<int>(x => x.Map(xi => xi * xi) == (x * x));
+        }
     }
 }

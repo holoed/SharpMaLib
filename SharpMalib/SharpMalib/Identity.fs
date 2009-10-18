@@ -45,3 +45,9 @@ let Select(m, f) = map (applyFunc f) m
 [<Extension>]
 let SelectMany(m, f, p) = 
    identity.Bind (m, (fun x -> x |> applyFunc f |> applyFunc2 p x))
+   
+[<Extension>]
+let Join m = join m
+
+[<Extension>]
+let Map (m, f:Converter<'a,'b>) = map (FuncConvert.ToFastFunc f) m
