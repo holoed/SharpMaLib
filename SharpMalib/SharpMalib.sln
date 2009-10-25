@@ -80,6 +80,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NUnit", "NUnit", "{D370BC8D
 		ThirdParty\NUnit\test.conf = ThirdParty\NUnit\test.conf
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{F5751C33-2C93-48C9-AD0F-A5649D97DC3C}"
+	ProjectSection(SolutionItems) = preProject
+		ThirdParty\NUnit\lib\nunit-console-runner.dll = ThirdParty\NUnit\lib\nunit-console-runner.dll
+		ThirdParty\NUnit\lib\nunit-console-runner.pdb = ThirdParty\NUnit\lib\nunit-console-runner.pdb
+		ThirdParty\NUnit\lib\nunit-gui-runner.dll = ThirdParty\NUnit\lib\nunit-gui-runner.dll
+		ThirdParty\NUnit\lib\nunit-gui-runner.pdb = ThirdParty\NUnit\lib\nunit-gui-runner.pdb
+		ThirdParty\NUnit\lib\nunit.core.dll = ThirdParty\NUnit\lib\nunit.core.dll
+		ThirdParty\NUnit\lib\nunit.core.interfaces.dll = ThirdParty\NUnit\lib\nunit.core.interfaces.dll
+		ThirdParty\NUnit\lib\nunit.core.interfaces.pdb = ThirdParty\NUnit\lib\nunit.core.interfaces.pdb
+		ThirdParty\NUnit\lib\nunit.core.interfaces.xml = ThirdParty\NUnit\lib\nunit.core.interfaces.xml
+		ThirdParty\NUnit\lib\nunit.core.pdb = ThirdParty\NUnit\lib\nunit.core.pdb
+		ThirdParty\NUnit\lib\nunit.fixtures.dll = ThirdParty\NUnit\lib\nunit.fixtures.dll
+		ThirdParty\NUnit\lib\nunit.fixtures.pdb = ThirdParty\NUnit\lib\nunit.fixtures.pdb
+		ThirdParty\NUnit\lib\nunit.uiexception.dll = ThirdParty\NUnit\lib\nunit.uiexception.dll
+		ThirdParty\NUnit\lib\nunit.uiexception.pdb = ThirdParty\NUnit\lib\nunit.uiexception.pdb
+		ThirdParty\NUnit\lib\nunit.uikit.dll = ThirdParty\NUnit\lib\nunit.uikit.dll
+		ThirdParty\NUnit\lib\nunit.uikit.pdb = ThirdParty\NUnit\lib\nunit.uikit.pdb
+		ThirdParty\NUnit\lib\nunit.util.dll = ThirdParty\NUnit\lib\nunit.util.dll
+		ThirdParty\NUnit\lib\nunit.util.pdb = ThirdParty\NUnit\lib\nunit.util.pdb
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 4
@@ -143,5 +164,6 @@ Global
 		{FECF8700-A40B-4BE2-BD62-596094079AF4} = {2EE36F7B-2774-4305-920E-F8A7710CB33A}
 		{F51C638C-EDA6-48C2-9E80-A8587C8A4951} = {2EE36F7B-2774-4305-920E-F8A7710CB33A}
 		{D370BC8D-9084-4E07-B221-90A441EA6B2A} = {2EE36F7B-2774-4305-920E-F8A7710CB33A}
+		{F5751C33-2C93-48C9-AD0F-A5649D97DC3C} = {D370BC8D-9084-4E07-B221-90A441EA6B2A}
 	EndGlobalSection
 EndGlobal
