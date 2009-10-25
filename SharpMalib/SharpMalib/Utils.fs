@@ -9,7 +9,10 @@
 // * You must not remove this notice, or any other, from this software.
 // * **********************************************************************************************
 
-open System
+namespace SharpMalib
+module Utils = 
 
-let applyFunc (f:Func<'a,'b>) x = f.Invoke x
-let applyFunc2 (f:Func<'a,'b,'c>) x y = f.Invoke(x, y)
+    open System
+
+    let applyFunc (f:Func<'a,'b>) x = f.Invoke x
+    let applyFunc2 (f:Func<'a,'b,'c>) x y = f.Invoke(x, y)

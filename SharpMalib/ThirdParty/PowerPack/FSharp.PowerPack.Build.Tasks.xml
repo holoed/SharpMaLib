@@ -2,25 +2,28 @@
 <doc>
 <assembly><name>FSharp.PowerPack.Build.Tasks</name></assembly>
 <members>
-<member name="P:Internal.Utilities.FSharpEnvironment.DotNetRuntime">
-<summary>
- The .NET runtime version that F# was built against.
-</summary>
-</member>
-<member name="P:Internal.Utilities.FSharpEnvironment.FSharpProductName">
-<summary>
- Name of this F# product
-</summary>
-</member>
-<member name="P:Internal.Utilities.FSharpEnvironment.FSharpRunningBinFolder">
-<summary>
- The default location of FSharp.Core.dll and fsc.exe based on the version of fsc.exe that is running
-</summary>
-</member>
-<member name="P:Internal.Utilities.FSharpEnvironment.FSharpRunningVersion">
+<member name="P:Internal.Utilities.FSharpEnvironment.BinFolderOfFSharpPowerPack">
 
 </member>
-<member name="P:Internal.Utilities.FSharpEnvironment.location">
+<member name="P:Internal.Utilities.FSharpEnvironment.BinFolderOfDefaultFSharpCompiler">
+
+</member>
+<member name="M:Internal.Utilities.FSharpEnvironment.tryAppConfig(System.String)">
+
+</member>
+<member name="M:Internal.Utilities.FSharpEnvironment.tryCurrentDomain">
+
+</member>
+<member name="M:Internal.Utilities.FSharpEnvironment.tryRegKey(System.String)">
+
+</member>
+<member name="P:Internal.Utilities.FSharpEnvironment.FSharpBinaryMetadataFormatRevision">
+
+</member>
+<member name="P:Internal.Utilities.FSharpEnvironment.FSharpTeamVersionNumber">
+
+</member>
+<member name="P:Internal.Utilities.FSharpEnvironment.FSharpCoreLibRunningVersion">
 
 </member>
 <member name="T:Internal.Utilities.FSharpEnvironment">
