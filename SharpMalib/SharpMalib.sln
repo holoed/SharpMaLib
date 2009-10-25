@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 10
+# Visual Studio 2010
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SharpMalib", "SharpMalib\SharpMalib.fsproj", "{D8D5A216-F32D-45FA-805A-CBFC865D9231}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SharpMaLib.Tests", "SharpMaLib.Tests\SharpMaLib.Tests.fsproj", "{2ED4051E-59BB-45FA-9E9D-2645B10EBF8A}"
@@ -41,6 +41,44 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpMaLibCS.Tests", "SharpMaLibCS.Tests\SharpMaLibCS.Tests.csproj", "{4A312C75-AA12-4D96-B2F9-9D1764A53247}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NUnit", "NUnit", "{D370BC8D-9084-4E07-B221-90A441EA6B2A}"
+	ProjectSection(SolutionItems) = preProject
+		ThirdParty\NUnit\agent.conf = ThirdParty\NUnit\agent.conf
+		ThirdParty\NUnit\agent.log.conf = ThirdParty\NUnit\agent.log.conf
+		ThirdParty\NUnit\launcher.log.conf = ThirdParty\NUnit\launcher.log.conf
+		ThirdParty\NUnit\license.rtf = ThirdParty\NUnit\license.rtf
+		ThirdParty\NUnit\license.txt = ThirdParty\NUnit\license.txt
+		ThirdParty\NUnit\log4net.dll = ThirdParty\NUnit\log4net.dll
+		ThirdParty\NUnit\nunit - Copy.exe = ThirdParty\NUnit\nunit - Copy.exe
+		ThirdParty\NUnit\nunit-agent.exe = ThirdParty\NUnit\nunit-agent.exe
+		ThirdParty\NUnit\nunit-agent.exe.config = ThirdParty\NUnit\nunit-agent.exe.config
+		ThirdParty\NUnit\nunit-agent.pdb = ThirdParty\NUnit\nunit-agent.pdb
+		ThirdParty\NUnit\nunit-console.exe = ThirdParty\NUnit\nunit-console.exe
+		ThirdParty\NUnit\nunit-console.exe.config = ThirdParty\NUnit\nunit-console.exe.config
+		ThirdParty\NUnit\nunit-console.pdb = ThirdParty\NUnit\nunit-console.pdb
+		ThirdParty\NUnit\nunit-server.exe = ThirdParty\NUnit\nunit-server.exe
+		ThirdParty\NUnit\nunit-server.pdb = ThirdParty\NUnit\nunit-server.pdb
+		ThirdParty\NUnit\nunit.exe = ThirdParty\NUnit\nunit.exe
+		ThirdParty\NUnit\nunit.exe.config = ThirdParty\NUnit\nunit.exe.config
+		ThirdParty\NUnit\nunit.framework.dll = ThirdParty\NUnit\nunit.framework.dll
+		ThirdParty\NUnit\nunit.framework.pdb = ThirdParty\NUnit\nunit.framework.pdb
+		ThirdParty\NUnit\nunit.framework.xml = ThirdParty\NUnit\nunit.framework.xml
+		ThirdParty\NUnit\nunit.pdb = ThirdParty\NUnit\nunit.pdb
+		ThirdParty\NUnit\nunit.vshost.exe = ThirdParty\NUnit\nunit.vshost.exe
+		ThirdParty\NUnit\nunit.vshost.exe.config = ThirdParty\NUnit\nunit.vshost.exe.config
+		ThirdParty\NUnit\pnunit-agent.exe = ThirdParty\NUnit\pnunit-agent.exe
+		ThirdParty\NUnit\pnunit-agent.exe.config = ThirdParty\NUnit\pnunit-agent.exe.config
+		ThirdParty\NUnit\pnunit-agent.pdb = ThirdParty\NUnit\pnunit-agent.pdb
+		ThirdParty\NUnit\pnunit-launcher.exe = ThirdParty\NUnit\pnunit-launcher.exe
+		ThirdParty\NUnit\pnunit-launcher.exe.config = ThirdParty\NUnit\pnunit-launcher.exe.config
+		ThirdParty\NUnit\pnunit-launcher.pdb = ThirdParty\NUnit\pnunit-launcher.pdb
+		ThirdParty\NUnit\pnunit.framework.dll = ThirdParty\NUnit\pnunit.framework.dll
+		ThirdParty\NUnit\pnunit.framework.pdb = ThirdParty\NUnit\pnunit.framework.pdb
+		ThirdParty\NUnit\pnunit.tests.dll = ThirdParty\NUnit\pnunit.tests.dll
+		ThirdParty\NUnit\pnunit.tests.pdb = ThirdParty\NUnit\pnunit.tests.pdb
+		ThirdParty\NUnit\test.conf = ThirdParty\NUnit\test.conf
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -104,5 +142,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{FECF8700-A40B-4BE2-BD62-596094079AF4} = {2EE36F7B-2774-4305-920E-F8A7710CB33A}
 		{F51C638C-EDA6-48C2-9E80-A8587C8A4951} = {2EE36F7B-2774-4305-920E-F8A7710CB33A}
+		{D370BC8D-9084-4E07-B221-90A441EA6B2A} = {2EE36F7B-2774-4305-920E-F8A7710CB33A}
 	EndGlobalSection
 EndGlobal
