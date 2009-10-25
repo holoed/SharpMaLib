@@ -9,62 +9,64 @@
 // * You must not remove this notice, or any other, from this software.
 // * **********************************************************************************************
 
-open NUnit.Framework
-open FsCheck
-open NUnitFsCheck
-open SharpMalib.Maybe.MaybeMonad
+namespace SharpMaLib.Tests
+module MaybeTests =
 
-let (>>=) m f = maybe.Bind (m, f)
-let unit = maybe.Return
+    open NUnit.Framework
+    open FsCheck
+    open SharpMalib.Maybe.MaybeMonad
 
-let f x = if x > 0 then Just x else Nothing 
+    let (>>=) m f = maybe.Bind (m, f)
+    let unit = maybe.Return
 
-[<TestFixture>]
-type MaybeTests =
-    new() = {}
-    
-    [<Test>]
-    member x.MonadLaws() =
-        // Left unit  
-        quickCheck (fun m f a -> ((unit a) >>= f) = f a) 
-        // Right unit
-        quickCheck (fun m  -> (m >>= unit) = m)
-        // Associative
-        quickCheck (fun m f g-> ((m >>= f) >>= g) = (m >>= (fun x -> f x >>= g)))
+    let f x = if x > 0 then Just x else Nothing 
 
-    [<Test>]
-    member x.MonadLawsInTermsOfMapAndJoin() =
-        let f x = x / 2
-        let g x = x - 2
-        quickCheck (fun x -> map id x = id x)
-        quickCheck (fun x -> map (f << g) x = ((map f) << (map g)) x)
-        quickCheck (fun x -> (map f << unit) x = (unit << f) x)
-        quickCheck (fun x -> (map f << join) x = (join << (map (map f))) x)
-        quickCheck (fun x -> (join << unit) x = id x)
-        quickCheck (fun x -> (join << map unit) x = id x)
-        quickCheck (fun x -> (join << map join) x = (join << join) x)
-        quickCheck (fun m k -> m >>= k = join(map k m))
+    [<TestFixture>]
+    type MaybeTests =
+        new() = {}
+        
+        [<Test>]
+        member x.MonadLaws() =
+            // Left unit  
+            quickCheck (fun m f a -> ((unit a) >>= f) = f a) 
+            // Right unit
+            quickCheck (fun m  -> (m >>= unit) = m)
+            // Associative
+            quickCheck (fun m f g-> ((m >>= f) >>= g) = (m >>= (fun x -> f x >>= g)))
 
-    [<Test>]
-    member x.OneMaybe() =
-        quickCheck (fun x -> maybe  { let! x' = f x 
-                                      return x' } = f x)
-                                      
-    [<Test>]
-    member x.CombineTwoMaybesBothSucceedOrFail() =
-        quickCheck (fun x -> maybe  { let! x' = f x 
-                                      let! y' = f x 
-                                      return x' + y' } = match (f x, f x) with
-                                                         | (Just x', Just y') -> Just(x' + y')
-                                                         | (Nothing, Nothing) -> Nothing
-                                                         | _ -> failwith "This should never happen")
+        [<Test>]
+        member x.MonadLawsInTermsOfMapAndJoin() =
+            let f x = x / 2
+            let g x = x - 2
+            quickCheck (fun x -> map id x = id x)
+            quickCheck (fun x -> map (f << g) x = ((map f) << (map g)) x)
+            quickCheck (fun x -> (map f << unit) x = (unit << f) x)
+            quickCheck (fun x -> (map f << join) x = (join << (map (map f))) x)
+            quickCheck (fun x -> (join << unit) x = id x)
+            quickCheck (fun x -> (join << map unit) x = id x)
+            quickCheck (fun x -> (join << map join) x = (join << join) x)
+            quickCheck (fun m k -> m >>= k = join(map k m))
 
-    [<Test>]
-    member x.CombineTwoMaybesOneFails() =
-        quickCheck (fun x -> maybe  { let! x' = (f -x) 
-                                      let! y' = f x 
-                                      return x' + y' } = match (f x, f x) with
-                                                         | (_, _) -> Nothing)
-                                                         
+        [<Test>]
+        member x.OneMaybe() =
+            quickCheck (fun x -> maybe  { let! x' = f x 
+                                          return x' } = f x)
+                                          
+        [<Test>]
+        member x.CombineTwoMaybesBothSucceedOrFail() =
+            quickCheck (fun x -> maybe  { let! x' = f x 
+                                          let! y' = f x 
+                                          return x' + y' } = match (f x, f x) with
+                                                             | (Just x', Just y') -> Just(x' + y')
+                                                             | (Nothing, Nothing) -> Nothing
+                                                             | _ -> failwith "This should never happen")
 
-                                                         
+        [<Test>]
+        member x.CombineTwoMaybesOneFails() =
+            quickCheck (fun x -> maybe  { let! x' = (f -x) 
+                                          let! y' = f x 
+                                          return x' + y' } = match (f x, f x) with
+                                                             | (_, _) -> Nothing)
+                                                             
+
+                                                             

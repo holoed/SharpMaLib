@@ -15,7 +15,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<UsingTask TaskName="FsLex" AssemblyFile="FSharp.PowerPack.Build.Tasks.dll"/>
 	<UsingTask TaskName="FsYacc" AssemblyFile="FSharp.PowerPack.Build.Tasks.dll"/>
-        <Import Project="$(ProgramFiles)\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
+	<Import Project="Microsoft.FSharp.Targets"/>
 	<PropertyGroup>
 		<CompileDependsOn>CallFsLex;CallFsYacc;$(CompileDependsOn)</CompileDependsOn>
 	</PropertyGroup>
@@ -40,7 +40,11 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 			<!-- Track outputs for 'Clean' -->
 			<Output TaskParameter="OutputFile" ItemName="FileWrites"/>
 		</FsLex>
-	</Target>
+    <!-- Make sure it will get cleaned  -->
+    <CreateItem Include="$(FsLexOutputFolder)%(FsLex.Filename).fs">
+      <Output TaskParameter="Include" ItemName="FileWrites"/>
+    </CreateItem>
+  </Target>
 
 	<!-- Build FsYacc files. -->
 	<Target
@@ -62,9 +66,21 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 			ToolExe="$(FsYaccToolExe)">
 			<!-- Track outputs for 'Clean' -->
 			<Output TaskParameter="OutputFile" ItemName="FileWrites"/>
-		</FsYacc>
-	</Target>
-
+    </FsYacc>
+    <!-- Make sure it will get cleaned  -->
+    <CreateItem Include="$(FsYaccOutputFolder)%(FsYacc.Filename).fs">
+      <Output TaskParameter="Include" ItemName="FileWrites"/>
+    </CreateItem>
+  </Target>
+	<ItemGroup>
+       <AvailableItemName Include="FsLex">
+           <Visible>false</Visible>
+       </AvailableItemName>
+       <AvailableItemName Include="FsYacc">
+           <Visible>false</Visible>
+       </AvailableItemName>
+    </ItemGroup>
 </Project>
+
 
 

@@ -66,11 +66,11 @@ namespace SharpMaLibCS.Tests
         private MaybeMonad.Maybe<Point> Expected(Func<int, MaybeMonad.Maybe<int>> f, Func<int, MaybeMonad.Maybe<int>> g, int x)
         {
             var xp = f(x);
-            if (xp.IsJust())
+            if (xp.IsJust)
             {
-                var yp = g(xp.Just1);
-                if (yp.IsJust())
-                    return new Point(xp.Just1, yp.Just1).Just();
+                var yp = g(xp.Tag);
+                if (yp.IsJust)
+                    return new Point(xp.Tag, yp.Tag).Just();
             }
             return Nothing<Point>();
         }

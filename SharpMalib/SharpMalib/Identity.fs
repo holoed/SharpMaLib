@@ -11,43 +11,43 @@
 
 namespace SharpMalib.Identity
 [<System.Runtime.CompilerServices.Extension>]
-module IdentityMonad
+module IdentityMonad = 
 
-open Utils
-open System
-open System.Runtime.CompilerServices
+    open SharpMalib.Utils
+    open System
+    open System.Runtime.CompilerServices
 
-// Identity Monad
-// The Identity monad is a monad that does not embody any computational strategy. 
-// It simply applies the bound function to its input without any modification. 
-// Computationally, there is no reason to use the Identity monad instead of the much simpler act of 
-// simply applying functions to their arguments.
+    // Identity Monad
+    // The Identity monad is a monad that does not embody any computational strategy. 
+    // It simply applies the bound function to its input without any modification. 
+    // Computationally, there is no reason to use the Identity monad instead of the much simpler act of 
+    // simply applying functions to their arguments.
 
-type IdentityBuilder() =
-    // a -> m a
-    member this.Return a = a
-    //  m a -> (a -> m b) -> m b
-    member this.Bind (a, f) = f a  
-    
-let identity = IdentityBuilder()    
+    type IdentityBuilder() =
+        // a -> m a
+        member this.Return a = a
+        //  m a -> (a -> m b) -> m b
+        member this.Bind (a, f) = f a  
+        
+    let identity = IdentityBuilder()    
 
-// (a -> b) -> m a -> m b
-let map f m = identity.Bind(m, fun x -> x |> f |> identity.Return)      
+    // (a -> b) -> m a -> m b
+    let map f m = identity.Bind(m, fun x -> x |> f |> identity.Return)      
 
-// m (m a) -> m a
-let join z = identity.Bind(z, id)    
+    // m (m a) -> m a
+    let join z = identity.Bind(z, id)    
 
-// C# Support
+    // C# Support
 
-[<Extension>]
-let Select(m, f) = map (applyFunc f) m
-    
-[<Extension>]
-let SelectMany(m, f, p) = 
-   identity.Bind (m, (fun x -> x |> applyFunc f |> applyFunc2 p x))
-   
-[<Extension>]
-let Join m = join m
+    [<Extension>]
+    let Select(m, f) = map (applyFunc f) m
+        
+    [<Extension>]
+    let SelectMany(m, f, p) = 
+       identity.Bind (m, (fun x -> x |> applyFunc f |> applyFunc2 p x))
+       
+    [<Extension>]
+    let Join m = join m
 
-[<Extension>]
-let Map (m, f:Converter<'a,'b>) = map (FuncConvert.ToFastFunc f) m
+    [<Extension>]
+    let Map (m, f:Converter<'a,'b>) = map (FuncConvert.ToFSharpFunc f) m
