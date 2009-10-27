@@ -26,6 +26,7 @@ module NUnitFsCheck =
                     | False (_,args,_,FsCheck.Property.Outcome.False,_) -> Assert.Fail("{0}-Falsifiable: {1}", [|(name :> obj);(sprintf "%A" args :> obj)|])
                     | False (_,args,_,FsCheck.Property.Outcome.Exception(exc),_) -> Assert.Fail("{0}-Falsifiable: {1}", [|(name :> obj);(sprintf "%A with exception:%O" args exc :>obj)|])
                     | Exhausted data -> Assert.Inconclusive("Exhausted after {0} tests", [|(data.NumberOfTests :> obj)|])
+                    | _ -> raise (new NotSupportedException())
          }
      
     let nunitConfig = {quick with Runner = NUnitRunner}

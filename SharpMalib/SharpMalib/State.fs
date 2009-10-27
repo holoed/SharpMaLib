@@ -33,6 +33,9 @@ module StateMonad =
         //  m a -> (a -> m b) -> m b
         member this.Bind (m, f) =  State (fun s -> let (v, s') = let (State f) = m in f s
                                                    let (State f') = f v in f' s')  
+        // a -> a
+        member this.ReturnFrom a = a
+
                                                    
                                         
     let getState = State (fun s -> s, s)
