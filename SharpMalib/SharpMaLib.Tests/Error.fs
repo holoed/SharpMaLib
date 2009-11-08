@@ -10,19 +10,19 @@
 // * **********************************************************************************************
 
 namespace SharpMaLib.Tests
-module ListTests = 
+module ErrorTests = 
 
     open NUnit.Framework
     open FsCheck
-    open SharpMalib.List.ListMonad
+    open SharpMalib.Error.ErrorMonad
 
-    let (>>=) m f = list.Bind (m, f)
-    let unit = list.Return
-
+    let (>>=) m f = error.Bind (m, f)
+    let unit = error.Return
+    
     [<TestFixture>]
-    type ListTests =
+    type ErrorTests =
         new() = {}
-        
+
         [<Test>]
         member x.MonadLaws() =
             // Left unit  
@@ -44,4 +44,25 @@ module ListTests =
             quickCheck (fun x -> (join << map unit) x = id x)
             quickCheck (fun x -> (join << map join) x = (join << join) x)
             quickCheck (fun m k -> m >>= k = join(map k m))
+        
+        [<Test>]
+        member x.ThrowAndCatch() = 
+            let f x = (error {
+                                    // Statements in which errors might be thrown
+                                    if (x > 0) then 
+                                        return! throw "This is an Error"  
+                                    else                                                                             
+                                        return x
+                                }) 
+                      |> catch (fun ex -> 
+                        error {
+                                    // Statements that execute in the event of an exception, with 'ex' bound to the exception
+                                    Assert.AreEqual ("This is an Error", ex)
+                                    return 42
+                               })
+            Assert.AreEqual (-1,  execute (f -1))
+            Assert.AreEqual (42,  execute (f 5))
+
+            
+      
         
