@@ -65,6 +65,7 @@
     <Compile Include="Maybe.fs" />
     <Compile Include="State.fs" />
     <Compile Include="List.fs" />
+    <Compile Include="Error.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SharpMalib\SharpMalib.fsproj">
