@@ -51,7 +51,7 @@
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
     <Reference Include="nunit.framework">
-      <HintPath>C:\Users\epentangelo\Documents\Visual Studio 10\Projects\SharpMalib\ThirdParty\NUnit\nunit.framework.dll</HintPath>
+      <HintPath>..\ThirdParty\NUnit\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
