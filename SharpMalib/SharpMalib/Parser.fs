@@ -12,32 +12,42 @@
 namespace SharpMalib.Parser
 module ParserMonad = 
 
-    type Parser<'a, 'b> = Parser of ('a list -> ('b * ('a list)) option)
+    type Parser<'a, 'b> = Parser of ('a list -> ('b * ('a list)) list)
 
     let item = Parser (fun s -> match s with
-                                | x::xs -> Some (x, xs)
-                                | [] -> None)
+                                | x::xs -> [(x, xs)]
+                                | [] -> [])
     
-    let ret x = Parser (fun s -> Some (x, s))
+    let ret x = Parser (fun s -> [(x, s)])
 
-    let fail = Parser (fun _ -> None)
+    let fail = Parser (fun _ -> [])
 
     let parse (Parser p) s = p (Seq.toList s)
 
+    // Deterministic choice operator
     let (+++) p q = Parser (fun s -> match parse p s with
-                                     | None-> parse q s
+                                     | []-> parse q s
                                      | result -> result)
 
     type ParserMonad() =
         // m a -> (a -> m b) -> m b
         member this.Bind (m, f) = Parser (fun s -> match parse m s with
-                                                   | None -> None
-                                                   | Some (x, xs) -> parse (f x) xs)
+                                                   | [] -> []
+                                                   | [(x, xs)] -> parse (f x) xs)
         // a -> m a
         member thid.Return x = ret x
 
         // m a -> m a
         member this.ReturnFrom (x:Parser<'a, 'b>) = x
+
+        // () -> m a
+        member this.Zero () = fail
+
+        // m a -> m a -> m a
+        member this.Combine (p, q) = Parser (fun s -> (parse p s) @ (parse q s))
+
+        // (() -> M a>) -> M a 
+        member this.Delay (f : (unit -> Parser<'a,'b>)) = f()
 
     let parser = ParserMonad()
 
