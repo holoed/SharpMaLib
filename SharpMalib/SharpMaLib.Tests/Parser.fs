@@ -11,18 +11,15 @@
 
 namespace SharpMalib.Tests
 module ParserTests =
+    open System
     open NUnit.Framework
     open FsCheck
     open SharpMalib.Parser.ParserMonad
 
     let (>>=) m f = parser.Bind (m, f)
     let unit = parser.Return
-
-    let f x = Parser(fun s -> Some (x, s))
-
-    type Helper =
-     static member Some (a, s:string) = Some (a, Seq.toList s)
-     static member Some (x:string, y:string) = Some (Seq.toList x, Seq.toList y)
+                                  
+    let f x = Parser(fun s -> [(x, s)])
 
     [<TestFixture>]
     type ParserTests =
@@ -30,32 +27,35 @@ module ParserTests =
         
         [<Test>]
         member this.Item() =
-            Assert.AreEqual (Helper.Some ('H', "ello"), parse item "Hello")
-            Assert.AreEqual (None, parse item "")
+            Assert.AreEqual ([('H', ['e';'l';'l';'o'])], parse item "Hello")
+            Assert.AreEqual ([], parse item "")
 
         [<Test>]
         member this.Ret() = 
-            Assert.AreEqual (Helper.Some ('X', "42"), parse (ret 'X') "42")
+            Assert.AreEqual ([('X', ['4';'2'])], parse (ret 'X') "42")
 
         [<Test>]
         member this.Fail() =
-            Assert.AreEqual (None , parse fail "Hello")
+            Assert.AreEqual ([] , parse fail "Hello")
 
         [<Test>]
-        member this.Or() =
+        member this.DeterministicChoice() =
             let parserA = ret 'X'
             let parserB = fail
             let input = "42"
-            let assertValue = fun actual -> Assert.AreEqual (Helper.Some ('X', input), actual)
-            assertValue (parse (parserA +++ parserB) input)
-            assertValue (parse (parserB +++ parserA) input)
+            Assert.AreEqual (['X', ['4';'2']], parse (parserA +++ parserB) input)
+            Assert.AreEqual (['X', ['4';'2']], parse (parserB +++ parserA) input)
 
         [<Test>]
         member this.Sat() =
-            Assert.AreEqual (None, parse (sat 'X') "Hello")
-            Assert.AreEqual (Helper.Some ('H', "ello"), parse (sat 'H') "Hello")
+            Assert.AreEqual ([], parse (sat 'X') "Hello")
+            Assert.AreEqual ([('H', ['e';'l';'l';'o'])], parse (sat 'H') "Hello")
 
         [<Test>]
         member this.StringP() =
-            Assert.AreEqual(None, parse (stringp (Seq.toList "Hello")) "World")
-            Assert.AreEqual(Helper.Some ("Hello", " World"), parse (stringp (Seq.toList "Hello")) "Hello World")
+            Assert.AreEqual([], parse (stringp (Seq.toList "Hello")) "World")
+            Assert.AreEqual([(['H';'e';'l';'l';'o'], [' ';'W';'o';'r';'l';'d'])], parse (stringp (Seq.toList "Hello")) "Hello World")
+
+        [<Test>]
+        member this.NonDeterministicChoice() =
+            Assert.AreEqual ([('X', ['H';'e';'l';'l';'o']); ('Y', ['H';'e';'l';'l';'o'])], parse (parser { return 'X' ; return 'Y' }) "Hello")
