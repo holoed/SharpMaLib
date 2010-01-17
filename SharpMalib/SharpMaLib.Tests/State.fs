@@ -15,7 +15,7 @@ module StateTests =
 
     open System
     open NUnit.Framework
-    open FsCheck
+    open SharpMaLib.Tests.NUnitFsCheck
     open SharpMalib.State.StateMonad
 
     let equals expected actual = (expected = actual) || (Double.IsNaN(expected) || Double.IsNaN(actual))

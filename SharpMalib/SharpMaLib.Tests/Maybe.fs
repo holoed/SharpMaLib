@@ -13,7 +13,7 @@ namespace SharpMaLib.Tests
 module MaybeTests =
 
     open NUnit.Framework
-    open FsCheck
+    open SharpMaLib.Tests.NUnitFsCheck
     open SharpMalib.Maybe.MaybeMonad
 
     let (>>=) m f = maybe.Bind (m, f)

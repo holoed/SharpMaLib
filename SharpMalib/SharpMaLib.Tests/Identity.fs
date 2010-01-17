@@ -13,7 +13,7 @@ namespace SharpMaLib.Tests
 module IdentityTests = 
 
     open NUnit.Framework
-    open FsCheck
+    open SharpMaLib.Tests.NUnitFsCheck
     open SharpMalib.Identity.IdentityMonad
 
     let (>>=) m f = identity.Bind (m, f)

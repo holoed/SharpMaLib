@@ -13,11 +13,12 @@ namespace SharpMalib.Tests
 module ParserTests =
     open System
     open NUnit.Framework
-    open FsCheck
     open SharpMalib.Parser.ParserMonad
+    open SharpMaLib.Tests.NUnitFsCheck
 
     let (>>=) m f = parser.Bind (m, f)
     let unit = parser.Return
+    let (++) p q = parser.Combine(p, q)
                                   
     let f x = Parser(fun s -> [(x, s)])
 
@@ -59,3 +60,9 @@ module ParserTests =
         [<Test>]
         member this.NonDeterministicChoice() =
             Assert.AreEqual ([('X', ['H';'e';'l';'l';'o']); ('Y', ['H';'e';'l';'l';'o'])], parse (parser { return 'X' ; return 'Y' }) "Hello")
+
+        [<Test>]
+        [<Ignore("Still Working on this one")>]
+        member this.BindDistributesOverChice() =
+            // (p ++ q) >>= f = (p >>= f) ++ (q >>= f)
+            quickCheck (fun p q f s -> parse ((p ++ q) >>= f) s = parse ((p >>= f) ++ (q >>= f)) s)            

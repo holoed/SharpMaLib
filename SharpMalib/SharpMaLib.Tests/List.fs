@@ -13,7 +13,7 @@ namespace SharpMaLib.Tests
 module ListTests = 
 
     open NUnit.Framework
-    open FsCheck
+    open SharpMaLib.Tests.NUnitFsCheck
     open SharpMalib.List.ListMonad
 
     let (>>=) m f = list.Bind (m, f)
