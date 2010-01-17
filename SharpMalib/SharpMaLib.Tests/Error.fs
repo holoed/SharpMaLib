@@ -13,7 +13,7 @@ namespace SharpMaLib.Tests
 module ErrorTests = 
 
     open NUnit.Framework
-    open FsCheck
+    open SharpMaLib.Tests.NUnitFsCheck
     open SharpMalib.Error.ErrorMonad
 
     let (>>=) m f = error.Bind (m, f)
