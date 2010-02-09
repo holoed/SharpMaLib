@@ -48,6 +48,23 @@ module ParserTests =
             Assert.AreEqual (['X', ['4';'2']], parse (parserB +++ parserA) input)
 
         [<Test>]
+        member this.Bind() = 
+            let parser = ret ['X'] >>=  fun s1 -> 
+                         ret ['Y'] >>=  fun s2 -> 
+                         ret ([s1] @ [s2])
+            let ret = parse parser "42"
+            Assert.AreEqual([([['X'];['Y']], ['4';'2'])], ret)            
+
+        [<Test>]
+        member this.ReturnFrom() =
+            let rec f x y  = parser { if (x > 0) then
+                                        return! (List.head y) 
+                                        return! (f (x - 1) (List.tail y) ) }
+            let ret = f 2 ([sat '4'; sat '2'])
+            let actual = parse ret "42"
+            Assert.AreEqual( [('4', ['2'])], actual)
+
+        [<Test>]
         member this.Sat() =
             Assert.AreEqual ([], parse (sat 'X') "Hello")
             Assert.AreEqual ([('H', ['e';'l';'l';'o'])], parse (sat 'H') "Hello")
