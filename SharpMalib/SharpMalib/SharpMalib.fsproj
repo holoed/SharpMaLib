@@ -42,6 +42,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StringUtils.fs" />
     <Compile Include="Utils.fs" />
     <Compile Include="Identity.fs" />
     <Compile Include="Maybe.fs" />

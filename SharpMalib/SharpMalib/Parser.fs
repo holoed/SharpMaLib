@@ -12,17 +12,19 @@
 namespace SharpMalib.Parser
 module ParserMonad = 
 
-    type Parser<'a, 'b> = Parser of ('a list -> ('b * ('a list)) list)
+    open StringUtils
+
+    type Parser<'a, 'b> = Parser of (string -> ('b * string) list)
 
     let item = Parser (fun s -> match s with
-                                | x::xs -> [(x, xs)]
-                                | [] -> [])
+                                | Cons(x, xs) -> [(x, xs)]
+                                | Empty -> [])
     
     let ret x = Parser (fun s -> [(x, s)])
 
     let fail = Parser (fun _ -> [])
 
-    let parse (Parser p) s = p (Seq.toList s)
+    let parse (Parser p) s = p s
 
     // Deterministic choice operator
     let (+++) p q = Parser (fun s -> match parse p s with
