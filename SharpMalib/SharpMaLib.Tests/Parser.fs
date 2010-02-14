@@ -65,6 +65,18 @@ module ParserTests =
             Assert.AreEqual( [('4', ['2'])], actual)
 
         [<Test>]
+        member this.Zero() =
+            Assert.AreEqual([], parse (parser { let! x = sat 'H'
+                                                if x <> 'H' then
+                                                    return 42  }) "Hello")
+
+        [<Test>]
+        member this.Combine() =
+            Assert.AreEqual([('H', ['e';'l';'l';'o'])], parse (parser { let! y = item 
+                                                                        if true then ()
+                                                                        return y}) "Hello")
+
+        [<Test>]
         member this.Sat() =
             Assert.AreEqual ([], parse (sat 'X') "Hello")
             Assert.AreEqual ([('H', ['e';'l';'l';'o'])], parse (sat 'H') "Hello")
