@@ -22,6 +22,13 @@ module ParserTests =
                                   
     let f x = Parser(fun s -> [(x, s)])
 
+    let testCharParser p c y   =  let ys = y.ToString()                                       
+                                  let result = parse p ys in 
+                                  if (c y) then
+                                     let [(x, xs)] = result in x = ys.[0]                          
+                                  else 
+                                     result = []
+
     [<TestFixture>]
     type ParserTests =
         new() = {}
@@ -32,26 +39,26 @@ module ParserTests =
             Assert.AreEqual ([], parse item "")
 
         [<Test>]
-        member this.Ret() = 
-            Assert.AreEqual ([('X', "42")], parse (ret 'X') "42")
+        member this.Result() = 
+            Assert.AreEqual ([('X', "42")], parse (result 'X') "42")
 
         [<Test>]
-        member this.Fail() =
-            Assert.AreEqual ([] , parse fail "Hello")
+        member this.Zero() =
+            Assert.AreEqual ([] , parse zero "Hello")
 
         [<Test>]
         member this.DeterministicChoice() =
-            let parserA = ret 'X'
-            let parserB = fail
+            let parserA = result 'X'
+            let parserB = zero
             let input = "42"
             Assert.AreEqual (['X', "42"], parse (parserA +++ parserB) input)
             Assert.AreEqual (['X', "42"], parse (parserB +++ parserA) input)
 
         [<Test>]
         member this.Bind() = 
-            let parser = ret ['X'] >>=  fun s1 -> 
-                         ret ['Y'] >>=  fun s2 -> 
-                         ret ([s1] @ [s2])
+            let parser = result ['X'] >>=  fun s1 -> 
+                         result ['Y'] >>=  fun s2 -> 
+                         result ([s1] @ [s2])
             let ret = parse parser "42"
             Assert.AreEqual([([['X'];['Y']], "42")], ret)            
 
@@ -60,13 +67,13 @@ module ParserTests =
             let rec f x y  = parser { if (x > 0) then
                                         return! (List.head y) 
                                         return! (f (x - 1) (List.tail y) ) }
-            let ret = f 2 ([sat '4'; sat '2'])
+            let ret = f 2 ([char '4'; char '2'])
             let actual = parse ret "42"
             Assert.AreEqual( [('4', "2")], actual)
 
         [<Test>]
-        member this.Zero() =
-            Assert.AreEqual([], parse (parser { let! x = sat 'H'
+        member this.ZeroComputation() =
+            Assert.AreEqual([], parse (parser { let! x = char 'H'
                                                 if x <> 'H' then
                                                     return 42  }) "Hello")
 
@@ -77,14 +84,31 @@ module ParserTests =
                                                              return y}) "Hello")
 
         [<Test>]
-        member this.Sat() =
-            Assert.AreEqual ([], parse (sat 'X') "Hello")
-            Assert.AreEqual ([('H', "ello")], parse (sat 'H') "Hello")
+        member this.Char() =
+            Assert.AreEqual ([], parse (char 'X') "Hello")
+            Assert.AreEqual ([('H', "ello")], parse (char 'H') "Hello")
+            quickCheck (fun (y:char) -> testCharParser (char y) (fun x -> true) y)
 
         [<Test>]
-        member this.StringP() =
-            Assert.AreEqual([], parse (stringp (Seq.toList "Hello")) "World")
-            Assert.AreEqual([(['H';'e';'l';'l';'o'], " World")], parse (stringp (Seq.toList "Hello")) "Hello World")
+        member this.Digit() =
+            quickCheck (fun (y:int) -> testCharParser digit (fun x -> x >= 0) y)
+
+        [<Test>]
+        member this.Lower() =
+            quickCheck (fun (y:char) -> testCharParser lower Char.IsLower y)
+
+        [<Test>]
+        member this.Upper() =
+            quickCheck (fun (y:char) -> testCharParser upper Char.IsUpper y)
+
+        [<Test>]
+        member this.Letter() =
+            quickCheck (fun (y:char) -> testCharParser letter Char.IsLetter y)
+
+        [<Test>]
+        member this.Word() =
+            Assert.AreEqual([("Hello", " World")], parse word "Hello World")
+            Assert.AreEqual([], parse word "42 World")
 
         [<Test>]
         member this.NonDeterministicChoice() =
