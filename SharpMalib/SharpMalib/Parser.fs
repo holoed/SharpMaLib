@@ -12,17 +12,18 @@
 namespace SharpMalib.Parser
 module ParserMonad = 
 
+    open System
     open StringUtils
 
-    type Parser<'a, 'b> = Parser of (string -> ('b * string) list)
+    type Parser<'a> = Parser of (string -> ('a * string) list)
+    
+    let result x = Parser (fun s -> [(x, s)])
+
+    let zero = Parser (fun _ -> [])
 
     let item = Parser (fun s -> match s with
                                 | Cons(x, xs) -> [(x, xs)]
                                 | Empty -> [])
-    
-    let ret x = Parser (fun s -> [(x, s)])
-
-    let fail = Parser (fun _ -> [])
 
     let parse (Parser p) s = p s
 
@@ -37,30 +38,39 @@ module ParserMonad =
                                                    | [] -> []
                                                    | [(x, xs)] -> parse (f x) xs)
         // a -> m a
-        member thid.Return x = ret x
+        member thid.Return x = result x
 
         // m a -> m a
-        member this.ReturnFrom (x:Parser<'a, 'b>) = x
+        member this.ReturnFrom (x:Parser<'a>) = x
 
         // () -> m a
-        member this.Zero () = fail
+        member this.Zero () = zero
 
         // m a -> m a -> m a
         member this.Combine (p, q) = Parser (fun s -> (parse p s) @ (parse q s))
 
         // (() -> M a>) -> M a 
-        member this.Delay (f : (unit -> Parser<'a,'b>)) = f()
+        member this.Delay (f : (unit -> Parser<'a>)) = f()
 
     let parser = ParserMonad()
 
-    let sat ch = parser { let! x = item
-                          if ch = x then
-                             return x
-                          else
-                             return! fail }
+    let sat p = parser { let! x = item
+                         if (p x) then
+                             return x }
 
-    let rec stringp s = match s with
-                        | x::xs -> parser { let! y = sat x
-                                            let! ys = stringp xs
-                                            return y::ys }
-                        | [] -> parser { return [] }
+    let char ch = sat (fun x -> ch = x)
+
+    let digit = sat Char.IsDigit
+
+    let lower = sat Char.IsLower
+
+    let upper = sat Char.IsUpper
+
+    let letter = lower +++ upper
+
+    let wordEnd = parser { return "" }
+
+    let rec word = parser { let! y = letter
+                            let! ys = word +++ wordEnd
+                            return sprintf "%c%s" y ys }
+                     
