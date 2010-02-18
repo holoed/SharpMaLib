@@ -38,7 +38,7 @@ module ParserMonad =
                                                    | [] -> []
                                                    | [(x, xs)] -> parse (f x) xs)
         // a -> m a
-        member thid.Return x = result x
+        member this.Return x = result x
 
         // m a -> m a
         member this.ReturnFrom (x:Parser<'a>) = x
@@ -50,7 +50,8 @@ module ParserMonad =
         member this.Combine (p, q) = Parser (fun s -> (parse p s) @ (parse q s))
 
         // (() -> M a>) -> M a 
-        member this.Delay (f : (unit -> Parser<'a>)) = f()
+        member this.Delay (f : (unit -> Parser<'a>)) = f()        
+                
 
     let parser = ParserMonad()
 
@@ -68,13 +69,17 @@ module ParserMonad =
 
     let letter = lower +++ upper
 
-    let rec word = parser { let! y = letter
-                            let! ys = word +++ (result "")
-                            return cons y ys }
+    let rec many p = parser { let! y = p
+                              let! ys = many p +++ (result "")
+                              return cons y ys }
+
+    let word = many letter
+
+    let number = many digit
 
     let rec stringp s = parser { match s with
                                  | Empty -> return ""
-                                 | Cons (x, xs) -> let! y = char x
-                                                   let! ys = stringp xs
-                                                   return cons y ys }
+                                 | Cons (x, xs) -> let! _ = char x
+                                                   let! _ = stringp xs
+                                                   return cons x xs }
                      
