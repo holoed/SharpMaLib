@@ -68,9 +68,13 @@ module ParserMonad =
 
     let letter = lower +++ upper
 
-    let wordEnd = parser { return "" }
-
     let rec word = parser { let! y = letter
-                            let! ys = word +++ wordEnd
-                            return sprintf "%c%s" y ys }
+                            let! ys = word +++ (result "")
+                            return cons y ys }
+
+    let rec stringp s = parser { match s with
+                                 | Empty -> return ""
+                                 | Cons (x, xs) -> let! y = char x
+                                                   let! ys = stringp xs
+                                                   return cons y ys }
                      
