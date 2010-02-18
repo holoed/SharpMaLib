@@ -111,9 +111,14 @@ module ParserTests =
             Assert.AreEqual([], parse word "42 World")
 
         [<Test>]
+        member this.Number() =
+            Assert.AreEqual([], parse number "Hello World")
+            Assert.AreEqual(["42", " World"], parse number "42 World")
+
+        [<Test>]
         member this.Stringp() =
-            Assert.AreEqual([("Hello", " World")], parse (stringp "Hello") "Hello World")
-            Assert.AreEqual([], parse (stringp "64") "42 World")
+            Assert.AreEqual([("Hello", " World")], parse word "Hello World")
+            Assert.AreEqual([], parse word "42 World")
 
         [<Test>]
         member this.NonDeterministicChoice() =
