@@ -69,17 +69,25 @@ module ParserMonad =
 
     let letter = lower +++ upper
 
-    let rec many p = parser { let! y = p
-                              let! ys = many p +++ (result "")
-                              return cons y ys }
+    let rec many1 p = parser { let! y = p
+                               let! ys = many p
+                               return cons y ys }
+    and many p = many1 p +++ (result "")
 
-    let word = many letter
+    let word = many1 letter
 
-    let number = many digit
+    let number = many1 digit
 
     let rec stringp s = parser { match s with
                                  | Empty -> return ""
                                  | Cons (x, xs) -> let! _ = char x
                                                    let! _ = stringp xs
                                                    return cons x xs }
-                     
+    let natural = 
+         let toDigit x = (int x) - (int '0')
+         let op m n = 10 * m + n    
+         let eval xs = xs |> Seq.map toDigit
+                          |> Seq.reduce op 
+         parser { let! xs = number
+                  return eval xs }
+     
