@@ -18,18 +18,27 @@ using NUnit.Framework;
 using SharpMalib.Maybe;
 using FsCheck;
 using System.Drawing;
+using SharpMaLib.Tests;
+using Microsoft.FSharp.Core;
 
 namespace SharpMaLibCSharpTests
 {
     [TestFixture]
     public class MaybeTests
     {
+        private Configuration _configuration;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _configuration = new Configuration { Runner = NUnitFsCheck.NUnitRunner };
+        }
+
         [Test]
         public void Select()
-        {
-            Func<int, MaybeMonad.Maybe<int>> f = x => x.Just();
-            Spec.ForAny<int>(x => f(x) == from y in f(x)
-                                          select y).QuickCheck("select"); 
+        {          
+            Func<int, MaybeMonad.Maybe<int>> f = x => x.Just();            
+            Spec.ForAny<int>(x => Operators.Compare(f(x), from y in f(x) select y) == 0).Check(_configuration); 
         }
 
         [Test]
@@ -43,38 +52,50 @@ namespace SharpMaLibCSharpTests
                                                                 x.Just() :
                                                                              Nothing<int>();
 
-            Spec.ForAny<int>(x => Expected(f, g, x) == from y in f(x)
-                                                       from z in g(y)
-                                                       select new Point(y, z)).QuickCheck("selectMany");
+            Spec.ForAny<int>(x =>
+                                 {
+                                     var left = Expected(f, g, x);
+                                     var right = from y in f(x)
+                                                 from z in g(y)
+                                                 select Tuple.Create(y, z);
+                                     return Operators.Compare(left, right) == 0;
+                                 }).Check(_configuration);
         }
 
         [Test]
         public void Join()
         {
-            Spec.ForAny<int>(x => x.Just() == x.Just().Just().Join());
+            Spec.ForAny<int>(x => Operators.Compare(x.Just(), x.Just().Just().Join()) == 0).Check(_configuration);
         }
 
         [Test]
         public void Map()
         {
-            Spec.ForAny<int>(x => x.Just().Map(xi => xi * xi) == (x * x).Just());
+            Spec.ForAny<int>(x => Operators.Compare(x.Just().Map(xi => xi * xi), (x * x).Just()) == 0).Check(_configuration);
         }
 
-        private MaybeMonad.Maybe<Point> Expected(Func<int, MaybeMonad.Maybe<int>> f, Func<int, MaybeMonad.Maybe<int>> g, int x)
+        private MaybeMonad.Maybe<Tuple<int, int>> Expected(Func<int, MaybeMonad.Maybe<int>> f, Func<int, MaybeMonad.Maybe<int>> g, int x)
         {
             var xp = f(x);
             if (xp.IsJust)
             {
-                var yp = g(xp.Tag);
+                var yp = g(Value(xp));
                 if (yp.IsJust)
-                    return new Point(xp.Tag, yp.Tag).Just();
+                    return Tuple.Create(Value(xp), Value(yp)).Just();
             }
-            return Nothing<Point>();
+            return Nothing<Tuple<int, int>>();
         }
 
         public MaybeMonad.Maybe<T> Nothing<T>()
         {
             return MaybeMonad.Maybe<T>.Nothing;
+        }
+
+        private static T Value<T>(MaybeMonad.Maybe<T> maybe)
+        {
+            if (maybe.IsJust)
+                return ((MaybeMonad.Maybe<T>.Just) maybe).Item;
+            throw new ArgumentException();
         }
     }
 }

@@ -57,6 +57,10 @@
     <Compile Include="StateTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SharpMaLib.Tests\SharpMaLib.Tests.fsproj">
+      <Project>{2ED4051E-59BB-45FA-9E9D-2645B10EBF8A}</Project>
+      <Name>SharpMaLib.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SharpMalib\SharpMalib.fsproj">
       <Project>{D8D5A216-F32D-45FA-805A-CBFC865D9231}</Project>
       <Name>SharpMalib</Name>
