@@ -116,9 +116,26 @@ module ParserTests =
             Assert.AreEqual(["42", " World"], parse number "42 World")
 
         [<Test>]
+        member this.Many() =
+            Assert.AreEqual([("Hello", " World")], parse (many letter) "Hello World")
+            Assert.AreEqual(["", "42 World"], parse (many letter) "42 World")
+
+        [<Test>]
+        member this.Many1() =
+            quickCheck (fun s -> parse word s = parse (many1 letter) s)
+            quickCheck (fun s -> parse number s = parse (many1 digit) s)
+
+        [<Test>]
         member this.Stringp() =
             Assert.AreEqual([("Hello", " World")], parse word "Hello World")
             Assert.AreEqual([], parse word "42 World")
+
+        [<Test>]
+        member this.natural() =
+            Assert.AreEqual([42, " World"], parse natural "42 World")
+            quickCheck (fun (x:int) -> 
+                let n = (x * x) + 1
+                [(n,"")] = parse natural (n.ToString()))
 
         [<Test>]
         member this.NonDeterministicChoice() =
