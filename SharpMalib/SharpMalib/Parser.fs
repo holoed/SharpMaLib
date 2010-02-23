@@ -90,4 +90,12 @@ module ParserMonad =
                           |> Seq.reduce op 
          parser { let! xs = number
                   return eval xs }
+
+    let integer = 
+        let negate x = -x
+        let op = parser { let! _ = char '-'
+                          return negate } +++ parser { return id }
+        parser { let! f = op
+                 let! n = natural
+                 return f n }
      

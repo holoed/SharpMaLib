@@ -138,6 +138,12 @@ module ParserTests =
                 [(n,"")] = parse natural (n.ToString()))
 
         [<Test>]
+        member this.integer() =
+            Assert.AreEqual([42, " World"], parse integer "42 World")
+            Assert.AreEqual([-12, " World"], parse integer "-12 World")
+            quickCheck (fun (n:int) -> [(n,"")] = parse integer (n.ToString()))
+
+        [<Test>]
         member this.NonDeterministicChoice() =
             Assert.AreEqual ([('X', "Hello"); ('Y', "Hello")], parse (parser { return 'X' ; return 'Y' }) "Hello")
 
