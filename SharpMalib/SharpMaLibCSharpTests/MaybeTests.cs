@@ -17,7 +17,6 @@ using System;
 using NUnit.Framework;
 using SharpMalib.Maybe;
 using FsCheck;
-using System.Drawing;
 using SharpMaLib.Tests;
 using Microsoft.FSharp.Core;
 
