@@ -15,7 +15,7 @@ module ParserMonad =
     open System
     open StringUtils
 
-    type Parser<'a> = Parser of (string -> ('a * string) list)
+    type Parser<'a, 'b> = Parser of (seq<'b> -> ('a * seq<'b>) list)
     
     let result x = Parser (fun s -> [(x, s)])
 
@@ -41,7 +41,7 @@ module ParserMonad =
         member this.Return x = result x
 
         // m a -> m a
-        member this.ReturnFrom (x:Parser<'a>) = x
+        member this.ReturnFrom (x:Parser<'a, 'b>) = x
 
         // () -> m a
         member this.Zero () = zero
@@ -50,7 +50,7 @@ module ParserMonad =
         member this.Combine (p, q) = Parser (fun s -> (parse p s) @ (parse q s))
 
         // (() -> M a>) -> M a 
-        member this.Delay (f : (unit -> Parser<'a>)) = f()        
+        member this.Delay (f : (unit -> Parser<'a, 'b>)) = f()        
                 
 
     let parser = ParserMonad()
@@ -72,14 +72,14 @@ module ParserMonad =
     let rec many1 p = parser { let! y = p
                                let! ys = many p
                                return cons y ys }
-    and many p = many1 p +++ (result "")
+    and many p = many1 p +++ (result Seq.empty)
 
     let word = many1 letter
 
     let number = many1 digit
 
     let rec stringp s = parser { match s with
-                                 | Empty -> return ""
+                                 | Empty -> return Seq.empty
                                  | Cons (x, xs) -> let! _ = char x
                                                    let! _ = stringp xs
                                                    return cons x xs }
@@ -98,4 +98,9 @@ module ParserMonad =
         parser { let! f = op
                  let! n = natural
                  return f n }
+
+    let sepBy1 p sep = parser { let! x = p
+                                let! xs = many (parser { let! _ = sep 
+                                                         return!  p })
+                                return cons x xs }
      
