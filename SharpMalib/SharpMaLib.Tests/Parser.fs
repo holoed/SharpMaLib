@@ -148,6 +148,7 @@ module ParserTests =
 
         [<Test>]
         member this.integer() =
+            Assert.AreEqual([0, " World"], parse integer "0 World" |> ToResult)
             Assert.AreEqual([42, " World"], parse integer "42 World" |> ToResult)
             Assert.AreEqual([-12, " World"], parse integer "-12 World" |> ToResult)
             quickCheck (fun (n:int) -> [(n, "")] = (parse integer (n.ToString()) |> ToResult))
@@ -157,6 +158,24 @@ module ParserTests =
             let [(x, xs)] = parse (sepBy1 digit (char ',')) "1,2,3" |> ToResult
             Assert.AreEqual (String.Empty, xs)
             Assert.AreEqual (['1';'2';'3'],  Seq.toArray x)
+
+            quickCheck (fun (n:int) -> 
+                let ns = if (n >= 0) then seq [0.. n] else seq [0..-1..n]
+                let [(ks, _)] = (System.String.Join(",", ns) |> parse (sepBy1 integer (char ','))) |> ToResult
+                Seq.toList ks = Seq.toList ns)
+
+        [<Test>]
+        member this.sepBy() =           
+            let [_, xs] = parse (sepBy digit (char ',')) "Hello" |> ToResult
+            let ys = parse (sepBy1 digit (char ',')) "World" |> ToResult
+            Assert.AreEqual ("Hello", xs)
+            Assert.IsTrue (List.isEmpty ys)
+
+            quickCheck (fun (n:int) -> 
+                let ns = if (n >= 0) then seq [0.. n] else seq [0..-1..n]
+                let [(xs, _)] = (System.String.Join(",", ns) |> parse (sepBy integer (char ','))) |> ToResult
+                let [(ys, _)] = (System.String.Join(",", ns) |> parse (sepBy1 integer (char ','))) |> ToResult
+                Seq.toList xs = Seq.toList ys)
 
         [<Test>]
         member this.NonDeterministicChoice() =
