@@ -105,3 +105,13 @@ module ParserMonad =
                                 return cons x xs }
      
     let sepBy p sep = (sepBy1 p sep) +++ (result Seq.empty)
+
+
+    let chainl1 p op =         
+        let rec rest l = parser { let! f = op
+                                  let! r = p 
+                                  return! rest (f l r) } +++ parser { return l }
+        parser { let! l = p
+                 return! rest l }
+
+    let chainl p op l = (chainl1 p op) +++ parser { return l }
