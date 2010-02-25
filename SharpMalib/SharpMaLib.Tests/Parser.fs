@@ -38,6 +38,15 @@ module ParserTests =
                       | [] -> []
                       | [(x, xs)] -> [(new System.String (Seq.toArray x), new System.String (Seq.toArray xs))]
 
+    type Exp = Value of int | Binary of Exp * Exp
+
+    let exp = parser { let! x = integer
+                       return Value x }
+    
+    let op = parser { let! _ = char ','
+                      return fun l r -> Binary(l, r) }
+
+
     [<TestFixture>]
     type ParserTests =
         new() = {}
@@ -176,6 +185,27 @@ module ParserTests =
                 let [(xs, _)] = (System.String.Join(",", ns) |> parse (sepBy integer (char ','))) |> ToResult
                 let [(ys, _)] = (System.String.Join(",", ns) |> parse (sepBy1 integer (char ','))) |> ToResult
                 Seq.toList xs = Seq.toList ys)
+
+        [<Test>]
+        member this.chainl1() =
+           let [(x, xs)] = parse (chainl1 exp op) "1,2,3,4" |> ToResult
+           Assert.AreEqual (String.Empty, xs)                       
+           Assert.AreEqual (Binary (Binary (Binary (Value 1,Value 2),Value 3),Value 4),  x, sprintf "%A" x)   
+           
+        [<Test>]
+        member this.chainl() =
+            let [(x, xs)] = parse (chainl exp op (Value 0)) "" |> ToResult
+            Assert.AreEqual (String.Empty, xs)                       
+            Assert.AreEqual (Value 0,  x, sprintf "%A" x)   
+
+            quickCheck (fun (n:int) -> 
+                let ns = if (n >= 0) then seq [0.. n] else seq [0..-1..n]
+                let plus = parser { let! _ = char '+'
+                                    return (+) }
+                let [(x, xs)] = System.String.Join("+", ns) |> parse (chainl1 integer plus) |> ToResult
+                let [(y, ys)] = System.String.Join("+", ns) |> parse (chainl integer plus 0)  |> ToResult
+                Assert.AreEqual (x, y)
+                Assert.AreEqual (xs, ys))
 
         [<Test>]
         member this.NonDeterministicChoice() =
