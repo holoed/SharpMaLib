@@ -46,6 +46,11 @@ module ParserTests =
     let op = parser { let! _ = char ','
                       return fun l r -> Binary(l, r) }
 
+    let AssertParse (expected:'a when 'a:equality) p input =           
+            match (parse p input) with
+            | [(ret, _)] -> let success = expected = ret
+                            Assert.IsTrue success
+            | _ -> Assert.Fail()
 
     [<TestFixture>]
     type ParserTests =
@@ -150,16 +155,16 @@ module ParserTests =
 
         [<Test>]
         member this.natural() =
-            Assert.AreEqual([42, " World"], parse natural "42 World" |> ToResult)
+            Assert.AreEqual([42, "World"], parse natural "42 World" |> ToResult)
             quickCheck (fun (x:int) -> 
                 let n = (x * x) + 1
                 [(n, "")] = ((parse natural (n.ToString())) |> ToResult))
 
         [<Test>]
         member this.integer() =
-            Assert.AreEqual([0, " World"], parse integer "0 World" |> ToResult)
-            Assert.AreEqual([42, " World"], parse integer "42 World" |> ToResult)
-            Assert.AreEqual([-12, " World"], parse integer "-12 World" |> ToResult)
+            Assert.AreEqual([0, "World"], parse integer "0 World" |> ToResult)
+            Assert.AreEqual([42, "World"], parse integer "42 World" |> ToResult)
+            Assert.AreEqual([-12, "World"], parse integer "-12 World" |> ToResult)
             quickCheck (fun (n:int) -> [(n, "")] = (parse integer (n.ToString()) |> ToResult))
 
         [<Test>]
@@ -216,3 +221,14 @@ module ParserTests =
         member this.BindDistributesOverChice() =
             // (p ++ q) >>= f = (p >>= f) ++ (q >>= f)
             quickCheck (fun p q f s -> parse ((p ++ q) >>= f) s = parse ((p >>= f) ++ (q >>= f)) s)            
+
+        [<Test>]
+        member this.Calculator() =
+            AssertParse 5 expr "2 + 3"
+            AssertParse 17 expr "2 + 3 * 5"
+            AssertParse 25 expr "(2 + 3) * 5"
+            AssertParse 11 expr "2 + 3 * 5 - 12 / 2"
+
+
+
+

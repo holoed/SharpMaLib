@@ -69,6 +69,8 @@ module ParserMonad =
 
     let letter = lower +++ upper
 
+    let whitespace = sat Char.IsWhiteSpace
+
     let rec many1 p = parser { let! y = p
                                let! ys = many p
                                return cons y ys }
@@ -78,17 +80,26 @@ module ParserMonad =
 
     let number = many1 digit
 
+    let whitespaces = many whitespace
+
+    let token p = parser { let! x = p
+                           let! _ = whitespaces
+                           return x }
+
     let rec stringp s = parser { match s with
-                                 | Empty -> return Seq.empty
-                                 | Cons (x, xs) -> let! _ = char x
-                                                   let! _ = stringp xs
-                                                   return cons x xs }
+                                  | Empty -> return Seq.empty
+                                  | Cons (x, xs) -> let! _ = char x
+                                                    let! _ = stringp xs
+                                                    return cons x xs }
+
+    let symb cs = token (stringp cs)
+        
     let natural = 
          let toDigit x = (int x) - (int '0')
          let op m n = 10 * m + n    
          let eval xs = xs |> Seq.map toDigit
                           |> Seq.reduce op 
-         parser { let! xs = number
+         parser { let! xs = token number
                   return eval xs }
 
     let integer = 
@@ -115,3 +126,22 @@ module ParserMonad =
                  return! rest l }
 
     let chainl p op l = (chainl1 p op) +++ parser { return l }
+
+
+    let addOp = parser { let! _ = symb "+"
+                         return (+) }
+    let subOp = parser { let! _ = symb "-"
+                         return (-) }
+    let mulOp = parser { let! _ = symb "*"
+                         return (*) }
+    let divOp = parser { let! _ = symb "/"
+                         return (/) }
+
+
+    let rec factor = integer +++ parser { let! _ = symb "("
+                                          let! n = expr
+                                          let! _ = symb ")"
+                                          return n }
+    and expr = chainl1 term (addOp +++ subOp)
+    and term = chainl1 factor (mulOp +++ divOp)
+
