@@ -35,8 +35,8 @@ module ParserTests =
                                                (y, new System.String (Seq.toArray ys))]
 
     let ToResultS xs = match xs with
-                      | [] -> []
-                      | [(x, xs)] -> [(new System.String (Seq.toArray x), new System.String (Seq.toArray xs))]
+                       | [] -> []
+                       | [(x, xs)] -> [(new System.String (Seq.toArray x), new System.String (Seq.toArray xs))]
 
     type Exp = Value of int | Binary of Exp * Exp
 
@@ -229,6 +229,18 @@ module ParserTests =
             AssertParse 25 expr "(2 + 3) * 5"
             AssertParse 11 expr "2 + 3 * 5 - 12 / 2"
 
+        [<Test>]
+        member this.CalculatorProperties() =
+           let calc exp x = String.Format(exp, x)
+                            |> parse expr
+                            |> ToResult
 
+           quickCheck (fun (x:int) -> calc "0 + {0}" [|x|] = calc "{0} + 0" [|x|])
+           quickCheck (fun (x:int) -> calc "1 * {0}" [|x|] = calc "{0} * 1" [|x|])
+
+           quickCheck (fun (x:int) (y:int) -> calc "{0} + {1}" [|x;y|] = calc "{1} + {0}" [|x;y|])
+           quickCheck (fun (x:int) (y:int) -> calc "{0} * {1}" [|x;y|] = calc "{1} * {0}" [|x;y|])
+
+           quickCheck (fun (x:int) (y:int) (z:int) -> calc "{0} * ({1} + {2})" [|x;y;z|] = calc "{0} * {1} + {0} * {2}" [|x;y;z|])
 
 
