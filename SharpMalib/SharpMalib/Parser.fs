@@ -14,6 +14,7 @@ namespace SharpMalib.Parser
 module ParserMonad = 
 
     open System    
+    open System.Collections.Generic
     open StringUtils
     open System.Runtime.CompilerServices
     open SharpMalib.Utils
@@ -154,14 +155,28 @@ module ParserMonad =
     // C# Support
 
     [<Extension>]
-    let Select(m, f) = parser.Bind(m, fun x -> applyFunc f x |> parser.Return)  
+    let Select(m, f) = parser { let! x = m
+                                return applyFunc f x}
         
     [<Extension>]
-    let SelectMany(m, f, p) = Parser (fun s -> match parse m s with
-                                               | [] -> []
-                                               | [(x, xs)] -> match parse (applyFunc f x) xs with
-                                                              | [] -> []
-                                                              | [(y, ys)] -> [(applyFunc2 p x y, ys)])
+    let SelectMany(m, f, p) = parser { let! x = m
+                                       let! y = applyFunc f x
+                                       return applyFunc2 p x y }
+
+    [<Extension>]
+    let Where (m, p) = parser { let! x = m
+                                if (applyFunc p x) then
+                                    return x }                              
+
+    [<Extension>]
+    let SepBy (p, sep) = sepBy p sep
+
+    [<Extension>]
+    let Many1 p = many1 p 
+
+    [<Extension>]
+    let AsString (p:Parser<IEnumerable<char>, 'a>) = parser { let! x = p
+                                                              return String.Join ("", x) }
 
     [<Extension>]
     let Parse (p, s) = parseString p s

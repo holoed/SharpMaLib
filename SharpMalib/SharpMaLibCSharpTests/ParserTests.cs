@@ -37,6 +37,18 @@ namespace SharpMaLibCSharpTests
         }
 
         [Test]
+        public void CreatingAParserToSplitStrings()
+        {            
+            var letter = from x in ParserMonad.item<char>()
+                         where Char.IsLetter(x)
+                         select x;
+            var word = letter.Many1().AsString();
+            var words = word.SepBy(ParserMonad.whitespaces);                       
+
+            CollectionAssert.AreEqual(new[] { "Hello", "World" }, words.Parse("Hello World").First());
+        }
+
+        [Test]
         public void Add()
         {
             var q = from x in "2 + 3".Eval()
