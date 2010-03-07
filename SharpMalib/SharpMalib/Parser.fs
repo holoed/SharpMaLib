@@ -10,10 +10,13 @@
 // * **********************************************************************************************
 
 namespace SharpMalib.Parser
+[<System.Runtime.CompilerServices.Extension>]
 module ParserMonad = 
 
-    open System
+    open System    
     open StringUtils
+    open System.Runtime.CompilerServices
+    open SharpMalib.Utils
 
     type Parser<'a, 'b> = Parser of (seq<'b> -> ('a * seq<'b>) list)
     
@@ -144,4 +147,26 @@ module ParserMonad =
                                           return n }
     and expr = chainl1 term (addOp +++ subOp)
     and term = chainl1 factor (mulOp +++ divOp)
+
+    let parseString p s = seq { let ret = parse p s
+                                for (x, _) in ret do yield x }
+
+    // C# Support
+
+    [<Extension>]
+    let Select(m, f) = parser.Bind(m, fun x -> applyFunc f x |> parser.Return)  
+        
+    [<Extension>]
+    let SelectMany(m, f, p) = Parser (fun s -> match parse m s with
+                                               | [] -> []
+                                               | [(x, xs)] -> match parse (applyFunc f x) xs with
+                                                              | [] -> []
+                                                              | [(y, ys)] -> [(applyFunc2 p x y, ys)])
+
+    [<Extension>]
+    let Parse (p, s) = parseString p s
+
+    [<Extension>]
+    let Eval s = parseString expr s
+      
 
