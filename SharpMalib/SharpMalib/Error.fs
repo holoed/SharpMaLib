@@ -13,6 +13,7 @@ namespace SharpMalib.Error
 [<System.Runtime.CompilerServices.Extension>]
 module ErrorMonad = 
 
+    open SharpMalib.Basic.Combinators
     open SharpMalib.Utils
     open System
     open System.Runtime.CompilerServices
@@ -43,10 +44,10 @@ module ErrorMonad =
     let error = ErrorMonad()
 
     // (a -> b) -> m a -> m b
-    let map f m = error.Bind(m, fun x -> x |> f |> error.Return)  
+    let inline map f m = mapM error f m
 
     // m (m a) -> m a
-    let join z = error.Bind(z, id)     
+    let inline join z = joinM error z       
 
     let throw e = Error e
     let catch f m = match m with 

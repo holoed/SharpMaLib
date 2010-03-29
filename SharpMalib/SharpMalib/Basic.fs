@@ -9,9 +9,15 @@
 // * You must not remove this notice, or any other, from this software.
 // * **********************************************************************************************
 
-module StringUtils
+namespace SharpMalib.Basic
+module Combinators =
 
-let (|Empty|Cons|) (xs:seq<'a>) : Choice<Unit, 'a * seq<'a>> = if (Seq.isEmpty xs) then Empty else Cons(Seq.head xs, Seq.skip 1 xs)
+    let inline mapM b f m =         
+        let unit x    = (^x: (member Return: ^b -> ^n) b, x)    
+        let (>>=) m f = (^x: (member Bind: ^m -> (^a -> ^n) -> ^n) b, m, f)
+        m >>= (fun x -> unit (f x))
 
-let cons ch s = seq { yield ch
-                      yield! s }
+
+    let inline joinM b m =            
+        let (>>=) m f = (^x: (member Bind: ^m -> (^n -> ^n) -> ^n) b, m, f)
+        m >>= id

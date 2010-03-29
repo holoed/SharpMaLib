@@ -14,6 +14,7 @@ namespace SharpMalib.Identity
 module IdentityMonad = 
 
     open SharpMalib.Utils
+    open SharpMalib.Basic.Combinators
     open System
     open System.Runtime.CompilerServices
 
@@ -32,22 +33,22 @@ module IdentityMonad =
     let identity = IdentityBuilder()    
 
     // (a -> b) -> m a -> m b
-    let map f m = identity.Bind(m, fun x -> x |> f |> identity.Return)      
+    let inline map f m = mapM identity f m
 
     // m (m a) -> m a
-    let join z = identity.Bind(z, id)    
+    let inline join z = joinM identity z    
 
     // C# Support
 
     [<Extension>]
-    let Select(m, f) = map (applyFunc f) m
+    let inline Select(m, f) = map (applyFunc f) m
         
     [<Extension>]
     let SelectMany(m, f, p) = 
        identity.Bind (m, (fun x -> x |> applyFunc f |> applyFunc2 p x))
        
     [<Extension>]
-    let Join m = join m
+    let inline Join m = join m
 
     [<Extension>]
-    let Map (m, f:Converter<'a,'b>) = map (FuncConvert.ToFSharpFunc f) m
+    let inline Map (m, f:Converter<'a,'b>) = map (FuncConvert.ToFSharpFunc f) m

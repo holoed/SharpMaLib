@@ -7,33 +7,6 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SharpMaLib.Tests", "SharpMa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdParty", "ThirdParty", "{2EE36F7B-2774-4305-920E-F8A7710CB33A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FsCheck", "FsCheck", "{FECF8700-A40B-4BE2-BD62-596094079AF4}"
-	ProjectSection(SolutionItems) = preProject
-		ThirdParty\FSCheck\Contributors.txt = ThirdParty\FSCheck\Contributors.txt
-		ThirdParty\FSCheck\FsCheck.dll = ThirdParty\FSCheck\FsCheck.dll
-		ThirdParty\FSCheck\FsCheck.pdb = ThirdParty\FSCheck\FsCheck.pdb
-		ThirdParty\FSCheck\FsCheck.XML = ThirdParty\FSCheck\FsCheck.XML
-		ThirdParty\FSCheck\License.txt = ThirdParty\FSCheck\License.txt
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerPack", "PowerPack", "{F51C638C-EDA6-48C2-9E80-A8587C8A4951}"
-	ProjectSection(SolutionItems) = preProject
-		ThirdParty\PowerPack\FSharp.Compiler.CodeDom.dll = ThirdParty\PowerPack\FSharp.Compiler.CodeDom.dll
-		ThirdParty\PowerPack\FSharp.PowerPack.Build.Tasks.dll = ThirdParty\PowerPack\FSharp.PowerPack.Build.Tasks.dll
-		ThirdParty\PowerPack\FSharp.PowerPack.Build.Tasks.xml = ThirdParty\PowerPack\FSharp.PowerPack.Build.Tasks.xml
-		ThirdParty\PowerPack\FSharp.PowerPack.dll = ThirdParty\PowerPack\FSharp.PowerPack.dll
-		ThirdParty\PowerPack\FSharp.PowerPack.Linq.dll = ThirdParty\PowerPack\FSharp.PowerPack.Linq.dll
-		ThirdParty\PowerPack\FSharp.PowerPack.Linq.xml = ThirdParty\PowerPack\FSharp.PowerPack.Linq.xml
-		ThirdParty\PowerPack\FSharp.PowerPack.Math.Providers.dll = ThirdParty\PowerPack\FSharp.PowerPack.Math.Providers.dll
-		ThirdParty\PowerPack\FSharp.PowerPack.Math.Providers.xml = ThirdParty\PowerPack\FSharp.PowerPack.Math.Providers.xml
-		ThirdParty\PowerPack\FSharp.PowerPack.Metadata.dll = ThirdParty\PowerPack\FSharp.PowerPack.Metadata.dll
-		ThirdParty\PowerPack\FSharp.PowerPack.targets = ThirdParty\PowerPack\FSharp.PowerPack.targets
-		ThirdParty\PowerPack\FSharp.PowerPack.xml = ThirdParty\PowerPack\FSharp.PowerPack.xml
-		ThirdParty\PowerPack\FsLex.exe = ThirdParty\PowerPack\FsLex.exe
-		ThirdParty\PowerPack\FsYacc.exe = ThirdParty\PowerPack\FsYacc.exe
-		ThirdParty\PowerPack\license.txt = ThirdParty\PowerPack\license.txt
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{D3CE2465-49A0-4003-A3DD-89E6447B27B4}"
 	ProjectSection(SolutionItems) = preProject
 		License.htm = License.htm
@@ -103,6 +76,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{F5751C33-2C9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpMaLibCSharpTests", "SharpMaLibCSharpTests\SharpMaLibCSharpTests.csproj", "{41E0068A-F11B-4B1F-B264-98E457AC5020}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FsCheck", "FsCheck", "{1B5B3BE9-7A86-4B70-851F-CB3CE8FFDA59}"
+	ProjectSection(SolutionItems) = preProject
+		ThirdParty\FSCheck\Contributors.txt = ThirdParty\FSCheck\Contributors.txt
+		ThirdParty\FSCheck\FsCheck.dll = ThirdParty\FSCheck\FsCheck.dll
+		ThirdParty\FSCheck\FsCheck.pdb = ThirdParty\FSCheck\FsCheck.pdb
+		ThirdParty\FSCheck\FsCheck.XML = ThirdParty\FSCheck\FsCheck.XML
+		ThirdParty\FSCheck\License.txt = ThirdParty\FSCheck\License.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 4
@@ -163,9 +145,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{FECF8700-A40B-4BE2-BD62-596094079AF4} = {2EE36F7B-2774-4305-920E-F8A7710CB33A}
-		{F51C638C-EDA6-48C2-9E80-A8587C8A4951} = {2EE36F7B-2774-4305-920E-F8A7710CB33A}
 		{D370BC8D-9084-4E07-B221-90A441EA6B2A} = {2EE36F7B-2774-4305-920E-F8A7710CB33A}
+		{1B5B3BE9-7A86-4B70-851F-CB3CE8FFDA59} = {2EE36F7B-2774-4305-920E-F8A7710CB33A}
 		{F5751C33-2C93-48C9-AD0F-A5649D97DC3C} = {D370BC8D-9084-4E07-B221-90A441EA6B2A}
 	EndGlobalSection
 EndGlobal
