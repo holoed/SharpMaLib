@@ -18,6 +18,7 @@ module ParserMonad =
     open StringUtils
     open System.Runtime.CompilerServices
     open SharpMalib.Utils
+    open SharpMalib.Basic.Combinators
 
     type Parser<'a, 'b> = Parser of (seq<'b> -> ('a * seq<'b>) list)
     
@@ -58,6 +59,12 @@ module ParserMonad =
                 
 
     let parser = ParserMonad()
+
+    // (a -> b) -> m a -> m b
+    let inline map f m = mapM parser f m
+
+    // m (m a) -> m a
+    let inline join z = joinM parser z  
 
     let sat p = parser { let! x = item
                          if (p x) then
@@ -155,8 +162,7 @@ module ParserMonad =
     // C# Support
 
     [<Extension>]
-    let Select(m, f) = parser { let! x = m
-                                return applyFunc f x}
+    let inline Select (m, f) = map (applyFunc f) m
         
     [<Extension>]
     let SelectMany(m, f, p) = parser { let! x = m

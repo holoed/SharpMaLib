@@ -13,6 +13,7 @@ namespace SharpMalib.Maybe
 [<System.Runtime.CompilerServices.Extension>]
 module MaybeMonad = 
 
+    open SharpMalib.Basic.Combinators
     open SharpMalib.Utils
     open System
     open System.Runtime.CompilerServices
@@ -36,15 +37,15 @@ module MaybeMonad =
     let maybe = MaybeBuilder()   
 
     // (a -> b) -> m a -> m b
-    let map f m = maybe.Bind(m, fun x -> x |> f |> maybe.Return)  
+    let inline map f m = mapM maybe f m
 
     // m (m a) -> m a
-    let join z = maybe.Bind(z, id)                                
+    let inline join z = joinM maybe z                               
 
     // C# Support
 
     [<Extension>]
-    let Select(m, f) = map (applyFunc f) m
+    let inline Select (m, f) = map (applyFunc f) m
         
     [<Extension>]
     let SelectMany(m, f, p) = 
@@ -58,4 +59,4 @@ module MaybeMonad =
     let Join m = join m
 
     [<Extension>]
-    let Map (m, f:Converter<'a,'b>) = map (FuncConvert.ToFSharpFunc f) m
+    let inline Map (m, f:Converter<'a,'b>) = map (FuncConvert.ToFSharpFunc f) m

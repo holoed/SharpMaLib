@@ -15,6 +15,7 @@ namespace SharpMalib.State
 module StateMonad =
 
     open SharpMalib.Utils
+    open SharpMalib.Basic.Combinators
     open System
     open System.Runtime.CompilerServices
 
@@ -46,11 +47,11 @@ module StateMonad =
 
     let state = StateBuilder() 
 
-    // (a -> b) -> m a -> m b
-    let map f m = state.Bind(m, fun x -> x |> f |> state.Return) 
+     // (a -> b) -> m a -> m b
+    let inline map f m = mapM state f m
 
     // m (m a) -> m a
-    let join m = state.Bind(m, id)
+    let inline join z = joinM state z
 
     // (a -> b -> m a) -> a -> [b] -> m a     
     let rec foldr f v xs =
@@ -69,11 +70,14 @@ module StateMonad =
     // C# Support
 
     [<Extension>]
-    let Select(m, f) = state.Bind(m, fun x -> state.Return (applyFunc f x))      
+    let inline Select (m, f) = map (applyFunc f) m
         
     [<Extension>]
     let SelectMany(m, f, p)  = 
        state.Bind (m, (fun x -> let (State g) = (applyFunc f x) in
                                 State(fun s -> let (y, s') = g s
                                                applyFunc2 p x y, s')))
+
+    [<Extension>]
+    let Join m = join m
                                                
