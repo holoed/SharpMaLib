@@ -9,14 +9,12 @@
 // * You must not remove this notice, or any other, from this software.
 // * **********************************************************************************************
 
-namespace SharpMalib.Identity
-[<System.Runtime.CompilerServices.Extension>]
-module IdentityMonad = 
+namespace Monad
+module Identity = 
 
-    open SharpMalib.Utils
-    open SharpMalib.Basic.Combinators
-    open System
-    open System.Runtime.CompilerServices
+    open Utils
+    open Combinators
+    open System    
 
     // Identity Monad
     // The Identity monad is a monad that does not embody any computational strategy. 
@@ -38,7 +36,17 @@ module IdentityMonad =
     // m (m a) -> m a
     let inline join z = joinM identity z    
 
-    // C# Support
+    
+// C# Support
+namespace MonadIdentityLinq
+[<System.Runtime.CompilerServices.Extension>]
+module Monad =
+
+    open System
+    open System.Runtime.CompilerServices    
+    open Monad
+    open Monad.Utils
+    open Monad.Identity
 
     [<Extension>]
     let inline Select(m, f) = map (applyFunc f) m

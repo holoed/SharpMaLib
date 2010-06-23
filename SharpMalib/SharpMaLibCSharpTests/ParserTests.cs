@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using FsCheck;
 using NUnit.Framework;
-using SharpMaLib.Tests;
-using SharpMalib.Parser;
+using Monad;
+using MonadParserLinq;
+
 
 namespace SharpMaLibCSharpTests
 {
@@ -22,7 +23,7 @@ namespace SharpMaLibCSharpTests
         [Test]
         public void Select()
         {
-            var p = from x in ParserMonad.item<char>()
+            var p = from x in Parser.item<char>()
                     select String.Format("({0})",x);
             CollectionAssert.AreEqual(new[]{"(H)"}, p.Parse("Hello"));          
         }
@@ -30,8 +31,8 @@ namespace SharpMaLibCSharpTests
         [Test]
         public void SelectMany()
         {
-            var p = from x in ParserMonad.item<char>()
-                    from y in ParserMonad.item<char>()
+            var p = from x in Parser.item<char>()
+                    from y in Parser.item<char>()
                     select String.Format("({0}{1})", x, y);
             CollectionAssert.AreEqual(new[] { "(He)" }, p.Parse("Hello"));
         }
@@ -39,11 +40,11 @@ namespace SharpMaLibCSharpTests
         [Test]
         public void CreatingAParserToSplitStrings()
         {            
-            var letter = from x in ParserMonad.item<char>()
+            var letter = from x in Parser.item<char>()
                          where Char.IsLetter(x)
                          select x;
             var word = letter.Many1().AsString();
-            var words = word.SepBy(ParserMonad.whitespaces);                       
+            var words = word.SepBy(Parser.whitespaces);                       
 
             CollectionAssert.AreEqual(new[] { "Hello", "World" }, words.Parse("Hello World").First());
         }

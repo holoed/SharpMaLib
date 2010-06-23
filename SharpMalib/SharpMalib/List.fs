@@ -9,8 +9,8 @@
 // * You must not remove this notice, or any other, from this software.
 // * **********************************************************************************************
 
-namespace SharpMalib.List
-module ListMonad = 
+namespace Monad
+module List = 
 
     // List Monad
     // The List monad embodies the strategy of combining a chain of non-deterministic computations 

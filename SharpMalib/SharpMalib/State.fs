@@ -10,14 +10,15 @@
 // * You must not remove this notice, or any other, from this software.
 // * **********************************************************************************************
 
-namespace SharpMalib.State
-[<System.Runtime.CompilerServices.Extension>]
-module StateMonad =
+namespace Monad
 
-    open SharpMalib.Utils
-    open SharpMalib.Basic.Combinators
-    open System
-    open System.Runtime.CompilerServices
+type State<'a, 'state> = State of ('state -> 'a * 'state)
+
+module State =
+
+    open Utils
+    open Combinators
+    open System    
 
     // State Monad
     // A pure functional language cannot update values in place because it violates referential transparency. 
@@ -26,8 +27,7 @@ module StateMonad =
     // The State monad hides the threading of the state parameter inside the binding operation, 
     // simultaneously making the code easier to write, easier to read and easier to modify.
 
-    type State<'a, 'state> = State of ('state -> 'a * 'state)
-
+    
     type StateBuilder() =
         // a -> m a
         member this.Return a = State(fun s -> a, s)
@@ -66,8 +66,17 @@ module StateMonad =
     // (a -> m b) -> [a] -> m [b]
     let mapList f xs = foldl (fun x y -> state { let! x' = f x
                                                  return x' :: y }) xs []
-                                             
-    // C# Support
+                                                 
+
+// C# Support
+namespace MonadStateLinq
+[<System.Runtime.CompilerServices.Extension>]
+module Monad =
+
+    open System.Runtime.CompilerServices    
+    open Monad
+    open Monad.Utils
+    open Monad.State
 
     [<Extension>]
     let inline Select (m, f) = map (applyFunc f) m
