@@ -14,10 +14,10 @@
 #endregion
 
 using NUnit.Framework;
-using SharpMalib.Identity;
+using Monad;
+using MonadIdentityLinq;
 using FsCheck;
 using System.Drawing;
-using SharpMaLib.Tests;
 
 namespace SharpMaLibCSharpTests
 {

@@ -9,7 +9,7 @@
 // * You must not remove this notice, or any other, from this software.
 // * **********************************************************************************************
 
-namespace SharpMalib.Basic
+namespace Monad
 module Combinators =
 
     let inline mapM b f m =         

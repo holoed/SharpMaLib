@@ -9,12 +9,11 @@
 // * You must not remove this notice, or any other, from this software.
 // * **********************************************************************************************
 
-namespace SharpMalib.Error
-[<System.Runtime.CompilerServices.Extension>]
-module ErrorMonad = 
+namespace Monad
+module Error = 
 
-    open SharpMalib.Basic.Combinators
-    open SharpMalib.Utils
+    open Combinators
+    open Utils
     open System
     open System.Runtime.CompilerServices
 

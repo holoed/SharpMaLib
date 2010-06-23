@@ -15,9 +15,9 @@
 
 using System;
 using NUnit.Framework;
-using SharpMalib.Maybe;
+using Monad;
+using MonadMaybeLinq;
 using FsCheck;
-using SharpMaLib.Tests;
 using Microsoft.FSharp.Core;
 
 namespace SharpMaLibCSharpTests
@@ -36,20 +36,16 @@ namespace SharpMaLibCSharpTests
         [Test]
         public void Select()
         {          
-            Func<int, MaybeMonad.Maybe<int>> f = x => x.Just();            
+            Func<int, FSharpOption<int>> f = x => x.Just();            
             Spec.ForAny<int>(x => Operators.Compare(f(x), from y in f(x) select y) == 0).Check(_configuration); 
         }
 
         [Test]
         public void SelectMany()
         {
-            Func<int, MaybeMonad.Maybe<int>> f = x => x > 0 ?
-                                                                x.Just() :
-                                                                             Nothing<int>();
+            Func<int, FSharpOption<int>> f = x => x > 0 ? x.Just() : Nothing<int>();
 
-            Func<int, MaybeMonad.Maybe<int>> g = x => x > 1 ?
-                                                                x.Just() :
-                                                                             Nothing<int>();
+            Func<int, FSharpOption<int>> g = x => x > 1 ? x.Just() : Nothing<int>();
 
             Spec.ForAny<int>(x =>
                                  {
@@ -73,27 +69,27 @@ namespace SharpMaLibCSharpTests
             Spec.ForAny<int>(x => Operators.Compare(x.Just().Map(xi => xi * xi), (x * x).Just()) == 0).Check(_configuration);
         }
 
-        private MaybeMonad.Maybe<Tuple<int, int>> Expected(Func<int, MaybeMonad.Maybe<int>> f, Func<int, MaybeMonad.Maybe<int>> g, int x)
+        private FSharpOption<Tuple<int, int>> Expected(Func<int, FSharpOption<int>> f, Func<int, FSharpOption<int>> g, int x)
         {
             var xp = f(x);
-            if (xp.IsJust)
+            if (xp.IsSome())
             {
                 var yp = g(Value(xp));
-                if (yp.IsJust)
+                if (yp.IsSome())
                     return Tuple.Create(Value(xp), Value(yp)).Just();
             }
             return Nothing<Tuple<int, int>>();
         }
 
-        public MaybeMonad.Maybe<T> Nothing<T>()
+        public FSharpOption<T> Nothing<T>()
         {
-            return MaybeMonad.Maybe<T>.Nothing;
+            return FSharpOption<T>.None;
         }
 
-        private static T Value<T>(MaybeMonad.Maybe<T> maybe)
+        private static T Value<T>(FSharpOption<T> maybe)
         {
-            if (maybe.IsJust)
-                return ((MaybeMonad.Maybe<T>.Just) maybe).Item;
+            if (maybe.IsSome())
+                return ((FSharpOption<T>) maybe).Value;
             throw new ArgumentException();
         }
     }

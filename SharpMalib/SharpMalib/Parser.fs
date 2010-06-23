@@ -9,16 +9,13 @@
 // * You must not remove this notice, or any other, from this software.
 // * **********************************************************************************************
 
-namespace SharpMalib.Parser
-[<System.Runtime.CompilerServices.Extension>]
-module ParserMonad = 
+namespace Monad
+module Parser = 
 
-    open System    
-    open System.Collections.Generic
+    open System
     open StringUtils
-    open System.Runtime.CompilerServices
-    open SharpMalib.Utils
-    open SharpMalib.Basic.Combinators
+    open Utils
+    open Combinators
 
     type Parser<'a, 'b> = Parser of (seq<'b> -> ('a * seq<'b>) list)
     
@@ -159,35 +156,46 @@ module ParserMonad =
     let parseString p s = seq { let ret = parse p s
                                 for (x, _) in ret do yield x }
 
-    // C# Support
 
-    [<Extension>]
-    let inline Select (m, f) = map (applyFunc f) m
-        
-    [<Extension>]
-    let SelectMany(m, f, p) = parser { let! x = m
-                                       let! y = applyFunc f x
-                                       return applyFunc2 p x y }
+// C# Support    
+namespace MonadParserLinq    
+    [<System.Runtime.CompilerServices.Extension>]
+    module Monad =
 
-    [<Extension>]
-    let Where (m, p) = parser { let! x = m
-                                if (applyFunc p x) then
-                                    return x }                              
+        open System
+        open System.Collections.Generic
+        open System.Runtime.CompilerServices    
+        open Monad
+        open Monad.Utils
+        open Monad.Parser
 
-    [<Extension>]
-    let SepBy (p, sep) = sepBy p sep
+        [<Extension>]
+        let inline Select (m, f) = map (applyFunc f) m
+            
+        [<Extension>]
+        let SelectMany(m, f, p) = parser { let! x = m
+                                           let! y = applyFunc f x
+                                           return applyFunc2 p x y }
 
-    [<Extension>]
-    let Many1 p = many1 p 
+        [<Extension>]
+        let Where (m, p) = parser { let! x = m
+                                    if (applyFunc p x) then
+                                        return x }                              
 
-    [<Extension>]
-    let AsString (p:Parser<IEnumerable<char>, 'a>) = parser { let! x = p
-                                                              return String.Join ("", x) }
+        [<Extension>]
+        let SepBy (p, sep) = sepBy p sep
 
-    [<Extension>]
-    let Parse (p, s) = parseString p s
+        [<Extension>]
+        let Many1 p = many1 p 
 
-    [<Extension>]
-    let Eval s = parseString expr s
-      
+        [<Extension>]
+        let AsString (p:Parser<IEnumerable<char>, 'a>) = parser { let! x = p
+                                                                  return String.Join ("", x) }
+
+        [<Extension>]
+        let Parse (p, s) = parseString p s
+
+        [<Extension>]
+        let Eval s = parseString expr s
+          
 
