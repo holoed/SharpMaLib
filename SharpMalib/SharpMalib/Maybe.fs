@@ -22,12 +22,20 @@ module Maybe =
     // and in which some steps may fail to return a value.
 
     type MaybeBuilder() =
-        // a -> m a
-        member this.Return a = Some a
         //  m a -> (a -> m b) -> m b
         member this.Bind (m, f) = match m with
                                   | Some x -> f x
                                   | _ -> None
+
+        // a -> m a
+        member this.Return a = Some a
+
+        // m a -> m a
+        member this.ReturnFrom a = a
+
+        // unit -> m a
+        member this.Zero () = None
+
         
     let maybe = MaybeBuilder()   
 
