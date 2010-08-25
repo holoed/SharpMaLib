@@ -32,7 +32,10 @@ module Maybe =
     let maybe = MaybeBuilder()   
 
     // (a -> b) -> m a -> m b
-    let inline map f m = mapM maybe f m
+    let inline liftM f m = liftM maybe f m
+
+    // (a -> b -> c) -> m a -> m b -> m c
+    let inline liftM2 f ma mb = liftM2 maybe maybe f ma mb
 
     // m (m a) -> m a
     let inline join z = joinM maybe z                               
@@ -47,15 +50,14 @@ module Monad =
     open Monad
     open Monad.Utils
     open Monad.Maybe
+    open Monad.LinqCombinators
 
     [<Extension>]
-    let inline Select (m, f) = map (applyFunc f) m
+    let inline Select (m, f) = select maybe f m
         
     [<Extension>]
-    let SelectMany(m, f, p) = 
-       maybe.Bind (m, (fun x -> match (applyFunc f x) with
-                                | Some y -> Some(applyFunc2 p x y)
-                                | None -> None))
+    let inline SelectMany(m, f, p) = selectMany maybe maybe f p m
+
     [<Extension>]
     let Just x = Some x
 
@@ -63,7 +65,7 @@ module Monad =
     let Join m = join m
 
     [<Extension>]
-    let inline Map (m, f:Converter<'a,'b>) = map (FuncConvert.ToFSharpFunc f) m
+    let inline Map (m, f:Converter<'a,'b>) = liftM (FuncConvert.ToFSharpFunc f) m
 
     [<Extension>]
     let IsSome (m : option<'a>) = m.IsSome

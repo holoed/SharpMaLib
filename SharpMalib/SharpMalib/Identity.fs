@@ -31,7 +31,10 @@ module Identity =
     let identity = IdentityBuilder()    
 
     // (a -> b) -> m a -> m b
-    let inline map f m = mapM identity f m
+    let inline liftM f m = liftM identity f m
+
+    // (a -> b -> c) -> m a -> m b -> m c
+    let inline liftM2 f ma mb = liftM2 identity identity f ma mb
 
     // m (m a) -> m a
     let inline join z = joinM identity z    
@@ -47,16 +50,16 @@ module Monad =
     open Monad
     open Monad.Utils
     open Monad.Identity
+    open Monad.LinqCombinators
 
     [<Extension>]
-    let inline Select(m, f) = map (applyFunc f) m
+    let inline Select(m, f) = select identity f m
         
     [<Extension>]
-    let SelectMany(m, f, p) = 
-       identity.Bind (m, (fun x -> x |> applyFunc f |> applyFunc2 p x))
+    let inline SelectMany(m, f, p) = selectMany identity identity f p m
        
     [<Extension>]
     let inline Join m = join m
 
     [<Extension>]
-    let inline Map (m, f:Converter<'a,'b>) = map (FuncConvert.ToFSharpFunc f) m
+    let inline Map (m, f:Converter<'a,'b>) = liftM (FuncConvert.ToFSharpFunc f) m

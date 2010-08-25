@@ -35,14 +35,14 @@ type ErrorTests =
     member x.MonadLawsInTermsOfMapAndJoin() =
         let f x = x / 2
         let g x = x - 2
-        quickCheck (fun x -> map id x = id x)
-        quickCheck (fun x -> map (f << g) x = ((map f) << (map g)) x)
-        quickCheck (fun x -> (map f << unit) x = (unit << f) x)
-        quickCheck (fun x -> (map f << join) x = (join << (map (map f))) x)
+        quickCheck (fun x -> liftM id x = id x)
+        quickCheck (fun x -> liftM (f << g) x = ((liftM f) << (liftM g)) x)
+        quickCheck (fun x -> (liftM f << unit) x = (unit << f) x)
+        quickCheck (fun x -> (liftM f << join) x = (join << (liftM (liftM f))) x)
         quickCheck (fun x -> (join << unit) x = id x)
-        quickCheck (fun x -> (join << map unit) x = id x)
-        quickCheck (fun x -> (join << map join) x = (join << join) x)
-        quickCheck (fun m k -> m >>= k = join(map k m))
+        quickCheck (fun x -> (join << liftM unit) x = id x)
+        quickCheck (fun x -> (join << liftM join) x = (join << join) x)
+        quickCheck (fun m k -> m >>= k = join(liftM k m))
     
     [<Test>]
     member x.ThrowAndCatch() = 

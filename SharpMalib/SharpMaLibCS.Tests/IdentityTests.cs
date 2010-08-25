@@ -13,45 +13,50 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
-using SharpMalib.Identity;
+using Monad;
+using MonadIdentityLinq;
 using FsCheck;
 using System.Drawing;
 
-namespace SharpMaLibCS.Tests
+namespace SharpMaLibCSharpTests
 {
     [TestFixture]
     public class IdentityTests
     {
+        private Configuration _configuration;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _configuration = new Configuration { Runner = NUnitFsCheck.NUnitRunner };
+        }
+
         [Test]
         public void Select()
         {
-            Spec.ForAny<int>(x => x == from y in x 
-                                       select y).QuickCheck("select"); 
+            Spec.ForAny<int>(x => x == from y in x
+                                       select y).Check(_configuration);
         }
 
         [Test]
         public void SelectMany()
         {
-            Spec.ForAny<int, int>((x,y) => new Point(x, y) == from xp in x 
-                                                              from yp in y 
-                                                              select new Point(xp, yp)).QuickCheck("selectMany");
+            Spec.ForAny<int, int>((x, y) => new Point(x, y) == from xp in x
+                                                               from yp in y
+                                                               select new Point(xp, yp)).Check(_configuration);
         }
 
         [Test]
         public void Join()
         {
-            Spec.ForAny<int>(x => x == x.Join());
+            Spec.ForAny<int>(x => x == x.Join()).Check(_configuration);
         }
 
         [Test]
         public void Map()
         {
-            Spec.ForAny<int>(x => x.Map(xi => xi * xi) == (x * x));
+            Spec.ForAny<int>(x => x.Map(xi => xi * xi) == (x * x)).Check(_configuration);
         }
     }
 }

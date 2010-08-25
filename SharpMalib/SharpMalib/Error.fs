@@ -43,7 +43,10 @@ module Error =
     let error = ErrorMonad()
 
     // (a -> b) -> m a -> m b
-    let inline map f m = mapM error f m
+    let inline liftM f m = liftM error f m
+
+    // (a -> b -> c) -> m a -> m b -> m c
+    let inline liftM2 f ma mb = liftM2 error error f ma mb
 
     // m (m a) -> m a
     let inline join z = joinM error z       

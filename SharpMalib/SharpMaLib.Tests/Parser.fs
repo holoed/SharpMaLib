@@ -218,7 +218,7 @@ type ParserTests =
 
     [<Test>]
     [<Ignore("Still Working on this one")>]
-    member this.BindDistributesOverChice() =
+    member this.BindDistributesOverChoice() =
         // (p ++ q) >>= f = (p >>= f) ++ (q >>= f)
         quickCheck (fun p q f s -> parse ((p ++ q) >>= f) s = parse ((p >>= f) ++ (q >>= f)) s)            
 

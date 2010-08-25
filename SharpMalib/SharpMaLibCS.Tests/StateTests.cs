@@ -14,51 +14,59 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
-using SharpMalib.State;
+using Monad;
+using MonadStateLinq;
 using FsCheck;
 using Microsoft.FSharp.Core;
 
-namespace SharpMaLibCS.Tests
+namespace SharpMaLibCSharpTests
 {
     [TestFixture]
     public class StateTests
     {
+        private Configuration _configuration;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _configuration = new Configuration { Runner = NUnitFsCheck.NUnitRunner };
+        }
+
         [Test]
         public void Select()
         {
-            Spec.ForAny<double>(x => x == StateMonad.Execute(from xp in GetState<double>() 
-                                                             select xp, x)).QuickCheck("select");        
+            Spec.ForAny<DateTime>(x =>
+            {
+                var y = State.Execute(from xp in GetState<DateTime>()
+                                      select xp, x);
+                return x == y;
+            }).Check(_configuration);
         }
 
         [Test]
         public void SelectMany()
         {
-            Spec.ForAny<string, string>((x, y) => x + y == StateMonad.Execute(from xp in GetState<string>()
-                                                                              from _  in SetState<string>(y)
-                                                                              from yp in GetState<string>()
-                                                                              select xp + yp, x)).QuickCheck("select");    
+            Spec.ForAny<string, string>((x, y) =>
+            {
+                var expected = x + y;
+                string actual = State.Execute(from xp in GetState<string>()
+                                              from _ in SetState(y)
+                                              from yp in GetState<string>()
+                                              select xp + yp, x);
+                return expected == actual;
+            }).Check(_configuration);
         }
 
-        private StateMonad.State<T,T> GetState<T>()
+        private State<T, T> GetState<T>()
         {
-            return StateMonad.getState<T>();   
+            return State.getState<T>();
         }
 
-        private StateMonad.State<Unit, S> SetState<S>(S state)
+        private State<Unit, S> SetState<S>(S state)
         {
-            return StateMonad.setState<S>(state);
+            return State.setState<S>(state);
         }
     }
 
-    public static class StateExtensions
-    {
-        public static StateMonad.State<K, double> Select<T, K>(this StateMonad.State<T, double> m, Func<T, K> f)
-        {
-            return StateMonad.Select<T, double, K>(m, f);
-        }
-    }
 }
