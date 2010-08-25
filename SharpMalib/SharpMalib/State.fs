@@ -47,8 +47,11 @@ module State =
 
     let state = StateBuilder() 
 
-     // (a -> b) -> m a -> m b
-    let inline map f m = mapM state f m
+    // (a -> b) -> m a -> m b
+    let inline liftM f m = liftM state f m
+
+    // (a -> b -> c) -> m a -> m b -> m c
+    let inline liftM2 f ma mb = liftM2 state state f ma mb
 
     // m (m a) -> m a
     let inline join z = joinM state z
@@ -77,15 +80,13 @@ module Monad =
     open Monad
     open Monad.Utils
     open Monad.State
+    open Monad.LinqCombinators
 
     [<Extension>]
-    let inline Select (m, f) = map (applyFunc f) m
+    let inline Select (m, f) = select state f m
         
     [<Extension>]
-    let SelectMany(m, f, p)  = 
-       state.Bind (m, (fun x -> let (State g) = (applyFunc f x) in
-                                State(fun s -> let (y, s') = g s
-                                               applyFunc2 p x y, s')))
+    let inline SelectMany(m, f, p)  = selectMany state state f p m
 
     [<Extension>]
     let Join m = join m

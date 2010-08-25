@@ -58,7 +58,10 @@ module Parser =
     let parser = ParserMonad()
 
     // (a -> b) -> m a -> m b
-    let inline map f m = mapM parser f m
+    let inline liftM f m = liftM parser f m
+
+    // (a -> b -> c) -> m a -> m b -> m c
+    let inline liftM2 f ma mb = liftM2 parser parser f ma mb
 
     // m (m a) -> m a
     let inline join z = joinM parser z  
@@ -168,14 +171,13 @@ namespace MonadParserLinq
         open Monad
         open Monad.Utils
         open Monad.Parser
+        open Monad.LinqCombinators
 
         [<Extension>]
-        let inline Select (m, f) = map (applyFunc f) m
+        let inline Select (m, f) = select parser f m
             
         [<Extension>]
-        let SelectMany(m, f, p) = parser { let! x = m
-                                           let! y = applyFunc f x
-                                           return applyFunc2 p x y }
+        let inline SelectMany(m, f, p) = selectMany parser parser f p m
 
         [<Extension>]
         let Where (m, p) = parser { let! x = m
