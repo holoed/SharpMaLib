@@ -36,6 +36,14 @@ module Combinators =
  
         bind1 ma (fun a1 -> bind2 mb (fun a2 -> unit2 (f a1 a2)))
 
+    // msum :: MonadPlus m => [m a] -> m a
+    //TODO: Sould it use Delay? Sould it use left or right folding?
+    let inline msum m maList = 
+        let mplus a b = (^x: (member mplus: ^m -> ^m -> ^m) m, a, b)
+        let mzero = (^x: (member mzero: unit -> ^m) m)
+
+        maList |> List.fold mplus mzero
+
 // С# support
 module LinqCombinators =
     
