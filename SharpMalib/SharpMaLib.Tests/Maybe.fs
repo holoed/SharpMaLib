@@ -65,6 +65,52 @@ type MaybeTests() =
                                       let! y' = f x 
                                       return x' + y' } = match (f x, f x) with
                                                          | (_, _) -> None)
-                                                         
 
-                                                         
+    [<Test>]
+    member x.MZeroLeft () =
+        quickCheck (fun f -> maybe.Bind(maybe.Zero(), f) = maybe.Zero())
+
+    [<Test>]
+    member x.MZeroRight () =
+        quickCheck (fun f -> maybe.Bind(f, fun () -> maybe.Zero()) = maybe.Zero())
+
+    [<Test>]
+    member x.MZeroInIfExpression () =
+        quickCheck (fun a -> maybe { if (a = true) then return 1 } = match a with
+                                                                     | true  -> Some 1
+                                                                     | false -> None )
+
+    [<Test>]
+    member x.MPlusOnYield () =
+        quickCheck (fun (a, b, c) -> maybe { yield a
+                                             yield b
+                                             yield c } = Some a)
+
+    [<Test>]
+    member x.MPlusOnYieldFrom () =
+        quickCheck (fun (a, b, c) -> maybe { yield! a
+                                             yield! b
+                                             yield! c } = match (a, b, c) with 
+                                                          | (Some _, _, _) -> a 
+                                                          | (_, Some _, _) -> b 
+                                                          | (_, _, Some _) -> c
+                                                          | _ -> None)
+
+    [<Test>]
+    member x.YieldAndBindToZero () =
+        quickCheck (fun (a, b, c) -> maybe { yield! a
+                                             yield! b
+                                             do! None
+                                             yield! c } = match (a, b, c) with 
+                                                          | (Some _, _, _) -> a 
+                                                          | (_, Some _, _) -> b 
+                                                          //| (_, _, Some _) -> c // this should never hit, monad will short-circuit at do! None
+                                                          | _ -> None)
+
+    [<Test>]
+    member x.MSum () =
+        quickCheck (fun (a, b, c) -> msum [a; b; c] = match (a, b, c) with 
+                                                        | (Some _, _, _) -> a 
+                                                        | (_, Some _, _) -> b 
+                                                        | (_, _, Some _) -> c
+                                                        | _ -> None)

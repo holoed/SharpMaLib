@@ -27,6 +27,21 @@ module Maybe =
                                   | Some x -> f x
                                   | _ -> None
 
+        // Combine used in conjunction with Yield and YieldFrom to implement monadPlus over Maybe.
+        // For example the following code will return Some 1:
+        // let a = maybe { yield! None
+        //                 yield 1
+        //                 yield 2
+        //                 yield 3 }
+        // Note, that maybe monad not short-circuit (at least current implementation). It will evaluate 
+        // all branches, then select proper one by folding delayed bindings from the last to the first 
+        // one. Ok, that sucks, really, I have no idea how to short-circuit it.
+        member this.Combine (a, b) = match a with
+                                     | Some _ -> a
+                                     | None -> b
+
+        member this.Delay f = f()
+
         // a -> m a
         member this.Return a = Some a
 
@@ -36,8 +51,21 @@ module Maybe =
         // unit -> m a
         member this.Zero () = None
 
+        member this.Yield a = Some a
+
+        member this.YieldFrom a = a
+
+        // More explicit definitions for generic monadic combinators
         
+        // MonadPlus
+        member this.mplus (a, b) = this.Combine (a, b)
+        member this.mzero () = this.Zero ()
+
     let maybe = MaybeBuilder()   
+
+    // Specialized functions
+
+    // Monad
 
     // (a -> b) -> m a -> m b
     let inline liftM f m = liftM maybe f m
@@ -46,7 +74,12 @@ module Maybe =
     let inline liftM2 f ma mb = liftM2 maybe maybe f ma mb
 
     // m (m a) -> m a
-    let inline join z = joinM maybe z                               
+    let inline join z = joinM maybe z
+
+    // MonadPlus
+
+    // This implementation of msum does not short-circuit.
+    let inline msum maList = msum maybe maList
 
 // C# Support
 namespace MonadMaybeLinq
