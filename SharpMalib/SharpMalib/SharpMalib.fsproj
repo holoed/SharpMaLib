@@ -52,6 +52,7 @@
     <Compile Include="Error.fs" />
     <Compile Include="Parser.fs" />
     <Compile Include="Continuation.fs" />
+    <Compile Include="Reader.fs" />
   </ItemGroup>
   <Import Project="$(ProgramFiles)\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
