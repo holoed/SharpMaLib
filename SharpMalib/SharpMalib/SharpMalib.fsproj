@@ -45,6 +45,7 @@
     <Compile Include="StringUtils.fs" />
     <Compile Include="Utils.fs" />
     <Compile Include="Basic.fs" />
+    <Compile Include="IMonoid.fs" />
     <Compile Include="Identity.fs" />
     <Compile Include="Maybe.fs" />
     <Compile Include="State.fs" />
@@ -53,6 +54,7 @@
     <Compile Include="Parser.fs" />
     <Compile Include="Continuation.fs" />
     <Compile Include="Reader.fs" />
+    <Compile Include="Writer.fs" />
   </ItemGroup>
   <Import Project="$(ProgramFiles)\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
