@@ -40,8 +40,6 @@ module Maybe =
                                      | Some _ -> a
                                      | None -> b
 
-        member this.Delay f = f()
-
         // a -> m a
         member this.Return a = Some a
 
@@ -54,6 +52,25 @@ module Maybe =
         member this.Yield a = Some a
 
         member this.YieldFrom a = a
+
+        member this.Delay(f) = this.Bind(this.Return(), f)
+
+        member this.TryWith(m, h) = this.ReturnFrom(m)
+    
+        member this.TryFinally(m, compensation) =
+          try this.ReturnFrom(m)
+          finally compensation()
+    
+        member this.Using(res:#System.IDisposable, body) =
+          this.TryFinally(body res, (fun () -> match res with null -> () | disp -> disp.Dispose()))
+    
+        member this.While(guard, m) =
+          if not(guard()) then this.Zero() else
+            this.Bind(m, (fun () -> this.While(guard, m)))
+    
+        member this.For(sequence:seq<_>, body) =
+          this.Using(sequence.GetEnumerator(),
+                     (fun enum -> this.While(enum.MoveNext, this.Delay(fun () -> body enum.Current))))
 
         // More explicit definitions for generic monadic combinators
         

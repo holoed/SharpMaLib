@@ -1,5 +1,5 @@
 ﻿// * **********************************************************************************************
-// * Copyright (c) Edmondo Pentangelo. 
+// * Copyright (c) Edmondo Pentangelo, Ryan Riley 
 // *
 // * This source code is subject to terms and conditions of the Microsoft Public License. 
 // * A copy of the license can be found in the License.html file at the root of this distribution. 
@@ -23,16 +23,46 @@ module Continuation =
     // aborting a portion of a computation, restarting a computation and interleaving execution of computations. 
     // The Continuation monad adapts CPS to the structure of a monad.
 
+    type Cont<'a, 'r> = Cont of (('a -> 'r) -> 'r)
+
+    let runCont (Cont c) f = c f
     type ContinuationMonad() =
-        // ma -> (a -> mb) -> mb
-        member this.Bind (m, f) = fun c -> m (fun a -> f a c)
         // a -> ma
-        member this.Return x = fun k -> k x
-        // ma -> ma
-        member this.ReturnFrom m = m
-
-    let cont = ContinuationMonad()
-
-   
+        member this.Return(x) = Cont (fun c -> c x)
     
-
+        // ma -> ma
+        member this.ReturnFrom(m: Cont<_,_>) = m
+    
+        // ma -> (a -> mb) -> mb
+        member this.Bind(m, k) = Cont (fun c -> runCont m (fun x -> runCont (k x) c))
+    
+        member this.Zero() = this.Return()
+    
+        member this.TryWith(m, h) =
+          Cont (fun k -> try runCont m k
+                         with e -> runCont (h e) k)
+    
+        member this.TryFinally(m, compensation) =
+          Cont (fun k -> try runCont m k
+                         finally compensation())
+    
+        member this.Using(res:#System.IDisposable, body) =
+          this.TryFinally(body res, (fun () -> match res with null -> () | disp -> disp.Dispose()))
+    
+        member this.Combine(comp1, comp2) = this.Bind(comp1, fun () -> comp2)
+    
+        member this.Delay(f) = this.Bind(this.Return(), f)
+    
+        member this.While(guard, m) =
+          if not(guard()) then this.Zero() else
+            this.Bind(m, (fun () -> this.While(guard, m)))
+    
+        member this.For(sequence:seq<_>, body) =
+          this.Using(sequence.GetEnumerator(),
+                     (fun enum -> this.While(enum.MoveNext, this.Delay(fun () -> body enum.Current))))
+    
+    let cont = ContinuationMonad()
+    
+    // Call-with-current-continuation: experimental
+    let callCC f = Cont(fun k -> runCont (f (fun a -> Cont(fun _ -> k a))) k)
+    

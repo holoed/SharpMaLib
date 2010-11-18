@@ -27,23 +27,49 @@ module State =
     // The State monad hides the threading of the state parameter inside the binding operation, 
     // simultaneously making the code easier to write, easier to read and easier to modify.
 
+    let runState (State s) initialState = s initialState
     
     type StateBuilder() =
         // a -> m a
-        member this.Return a = State(fun s -> a, s)
+        member this.Return a = State(fun s -> (a, s))
+
         //  m a -> (a -> m b) -> m b
-        member this.Bind (m, f) =  State (fun s -> let (v, s') = let (State f) = m in f s
-                                                   let (State f') = f v in f' s')  
+        member this.Bind(m, f) = State (fun s -> let (v, s') = runState m s in runState (f v) s')
+
         // a -> a
         member this.ReturnFrom a = a
 
-                                                   
+        member this.Zero() = this.Return ()
+    
+        member this.Combine(r1, r2) = this.Bind(r1, fun () -> r2)
+    
+        member this.TryWith(m, h) =
+          State (fun env -> try runState m env
+                            with e -> runState (h e) env)
+    
+        member this.TryFinally(m, compensation) =
+          State (fun env -> try runState m env
+                            finally compensation())
+    
+        member this.Using(res:#IDisposable, body) =
+          this.TryFinally(body res, (fun () -> match res with null -> () | disp -> disp.Dispose()))
+    
+        member this.Delay(f) = this.Bind(this.Return (), f)
+    
+        member this.While(guard, m) =
+          if not(guard()) then this.Zero() else
+            this.Bind(m, (fun () -> this.While(guard, m)))
+    
+        member this.For(sequence:seq<_>, body) =
+          this.Using(sequence.GetEnumerator(),
+                     (fun enum -> this.While(enum.MoveNext, this.Delay(fun () -> body enum.Current))))
                                         
-    let getState = State (fun s -> s, s)
-    let setState s = State (fun _ -> (), s)  
+    let getState = State (fun s -> (s, s))
+    let setState s = State (fun _ -> ((), s))
+    let eval m s = runState m s |> fst
+    let exec m s = runState m s |> snd
 
-    let Execute m s = let (State f) = m in
-                      let (x,_) = f s in x
+    let Execute m s = eval m s
 
     let state = StateBuilder() 
 

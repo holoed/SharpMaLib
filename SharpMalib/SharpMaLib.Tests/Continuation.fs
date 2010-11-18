@@ -18,7 +18,6 @@ open NUnitFsCheck
 open Monad.Continuation
 open System
 
-
 [<TestFixture>]
 type ContinuationTests =
     new() = {}
@@ -31,11 +30,11 @@ type ContinuationTests =
                   cont {
                           match n with
                           | n when n <= 0 -> return 1
-                          | _ -> let! x = fun f -> f n
+                          | _ -> let! x = Cont(fun f -> f n)
                                  let! y = loop (n - 1)
                                  return x * y
                        }
-                loop n (fun x -> x)
+                runCont (loop n) (fun x -> x)
 
        let product = List.fold (*) 1
 
