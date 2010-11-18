@@ -1,6 +1,6 @@
 ﻿namespace Monad
 
-// Reader monad (experemental) 
+// Reader monad (experimental) 
 //TODO: MonadError e m => MonadError e (ReaderT r m)
 
 type Reader<'e, 'a> = Reader of ('e -> 'a)
@@ -16,6 +16,33 @@ module Reader =
         member this.Bind (m, f) =  Reader (fun e -> runReader (f (runReader m e)) e)
 
         member this.Return a = Reader (fun _ -> a)
+
+        member this.ReturnFrom(a:Reader<'r,'a>) = a
+    
+        member this.Zero() = this.Return ()
+    
+        member this.Combine(r1, r2) = this.Bind(r1, fun () -> r2)
+    
+        member this.TryWith(m, h) =
+          Reader (fun env -> try runReader m env
+                             with e -> runReader (h e) env)
+    
+        member this.TryFinally(m, compensation) =
+          Reader (fun env -> try runReader m env
+                             finally compensation())
+    
+        member this.Using(res:#System.IDisposable, body) =
+          this.TryFinally(body res, (fun () -> match res with null -> () | disp -> disp.Dispose()))
+    
+        member this.Delay(f) = this.Bind(this.Return (), f)
+    
+        member this.While(guard, m) =
+          if not(guard()) then this.Zero() else
+            this.Bind(m, (fun () -> this.While(guard, m)))
+    
+        member this.For(sequence:seq<_>, body) =
+          this.Using(sequence.GetEnumerator(),
+                     (fun enum -> this.While(enum.MoveNext, this.Delay(fun () -> body enum.Current))))
 
     let reader = ReaderBuilder ()
 
